@@ -30,6 +30,7 @@ namespace 聚合搜索
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+           
         }
 
         /// <summary>

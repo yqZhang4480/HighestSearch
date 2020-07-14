@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" KeyDown="Page_KeyDown" SizeChanged="Page_SizeChanged">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    KeyDown="Page_KeyDown">
 
     <Grid>
         <VisualStateManager.VisualStateGroups>
@@ -70,18 +71,30 @@
             <Button Name="SettingReturn"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="36"
-                    Content="&#xE760;" Margin="0,13,0,0" Background="Transparent" Click="SettingReturn_Click"/>
-            <TextBlock FontSize="36" Margin="63,10,0,0" VerticalAlignment="Stretch">选项</TextBlock>
+                    Content="&#xE760;" Margin="0,13,0,10" Background="Transparent" Click="SettingReturn_Click"/>
+            <TextBlock FontSize="36" Margin="63,10,0,10" VerticalAlignment="Stretch">选项</TextBlock>
             <StackPanel Grid.Row="1"
                         Orientation="Vertical" Margin="10,0,0,0">
+                
+                <TextBlock Margin="0,20,0,10"
+                           FontSize="22">链接跳转</TextBlock>
                 <ToggleSwitch Name="OpenLinkOutside"
-                              Margin="0,20,0,10"
+                              Margin="0,0,10,0"
                               OffContent="关"
                               OnContent="开"
                               HorizontalAlignment="Left"
                               VerticalAlignment="Top">
-                    在外部浏览器打开链接
+                    在外部浏览器打开链接。
                 </ToggleSwitch>
+                <TextBlock Margin="0,20,0,10"
+                           FontSize="22">浏览器标识（UA）</TextBlock>
+                <TextBlock Margin="0,5,0,10">选择应用使用的浏览器标识。</TextBlock>
+                <ComboBox Name="UACB"
+                          HorizontalAlignment="Stretch"
+                          Margin="0,0,5,0">
+                </ComboBox>
+
+
             </StackPanel>
         </Grid>
 
@@ -258,26 +271,6 @@
                     <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
-
-            <TextBlock><Run Text="百度"/></TextBlock>
-            <TextBlock><Run Text="搜狗"/></TextBlock>
-            <TextBlock><Run Text="360 搜索"/></TextBlock>
-            <TextBlock><Run Text="Bing 国内版"/></TextBlock>
-            <TextBlock><Run Text="Google"/></TextBlock>
-            <TextBlock><Run Text="搜狗·微信"/></TextBlock>
-            <TextBlock><Run Text="哔哩哔哩"/></TextBlock>
-            <TextBlock><Run Text="知乎"/></TextBlock>
-            <TextBlock><Run Text="少数派"/></TextBlock>
-            <TextBlock><Run Text="36氪"/></TextBlock>
-            <TextBlock><Run Text="简书"/></TextBlock>
-            <TextBlock><Run Text="豆瓣"/></TextBlock>
-            <TextBlock><Run Text="微博"/></TextBlock>
-            <TextBlock><Run Text="今日头条"/></TextBlock>
-            <TextBlock><Run Text="天涯社区"/></TextBlock>
-            <TextBlock><Run Text="CSDN"/></TextBlock>
-            <TextBlock><Run Text="博客园"/></TextBlock>
-            <TextBlock><Run Text="Github"/></TextBlock>
-            <TextBlock><Run Text="Stack Overflow"/></TextBlock>
         </ListBox>
     </Grid>
 </Page>
