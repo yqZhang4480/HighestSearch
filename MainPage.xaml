@@ -6,9 +6,45 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" KeyDown="Page_KeyDown">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" KeyDown="Page_KeyDown" SizeChanged="Page_SizeChanged">
 
     <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup">
+                <VisualState x:Name="Large">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="650"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:Name="Midium">
+                    <VisualState.Setters>
+                        <Setter Target="CopyLink.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="OpenOutside.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="History.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="SettingButton.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
+                    </VisualState.Setters>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="400"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:Name="Small">
+                    <VisualState.Setters>
+                        <Setter Target="Back.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="Forward.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="Refresh.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="CopyLink.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="OpenOutside.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="History.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="SettingButton.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
+                    </VisualState.Setters>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -55,7 +91,7 @@
                  Grid.Column="4"
                  Source="https://www.baidu.com/"
                  LoadCompleted="WV_LoadCompleted"
-                 NewWindowRequested="WV_NewWindowRequested"/>
+                 NewWindowRequested="WV_NewWindowRequested" Visibility="Visible"/>
 
         <Grid x:Name="TitleGrid"
               Grid.Row="0"
@@ -109,22 +145,59 @@
                         FontSize="16"
                         Height="32"
                         Click="Search_Click"/>
-
-                <Button Name="MoreFunctions"
-                        Grid.Column="2"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Top"
-                        FontFamily="Segoe MDL2 Assets"
-                        Content="&#xE712;"
-                        Margin="0,5,5,0"
-                        FontSize="16"
-                        Height="32">
-                    <Button.Flyout>
-                        <Flyout>
-                            <StackPanel Name="ButtonSP"
-                                        Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="CopyLink"
+                <StackPanel Name="TitleButtonSP"
+                            Orientation="Horizontal"
+                            Grid.Column="2">
+                    <Button x:Name="Back" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE0A6;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Back_Click"/>
+                    <Button x:Name="Forward" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE0AB;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Forward_Click"/>
+                    <Button x:Name="Refresh" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE895;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Refresh_Click"/>
+                    <Button x:Name="CopyLink" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE16F;" Margin="0,5,5,0" FontSize="16" Height="32" Click="CopyLink_Click" PointerExited="CopyLink_PointerExited" />
+                    <Button Name="OpenOutside" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE12B;" Margin="0,5,5,0" Height="32" Click="OpenOutside_Click" />
+                    <Button Name="History" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE81C;" Margin="0,5,5,0" Height="32" Click="History_Click" />
+                    <Button Name="SettingButton" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE713;" Margin="0,5,5,0" Height="32" Click="SettingButton_Click" />
+                    <Button Name="MoreFunctions" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Margin="0,5,5,0" FontSize="16" Height="32" Visibility="Collapsed">
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel Name="FlyoutButtonSP">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="FlyoutBack"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Top"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Content="&#xE0A6;"
+                                            Margin="0,5,5,0"
+                                            FontSize="16"
+                                            Height="32"
+                                            Click="Back_Click"/>
+                                        <TextBlock VerticalAlignment="Center">后退</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="FlyoutForward"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Top"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Content="&#xE0AB;"
+                                            Margin="0,5,5,0"
+                                            FontSize="16"
+                                            Height="32"
+                                            Click="Forward_Click"/>
+                                        <TextBlock VerticalAlignment="Center">前进</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="FlyoutRefresh"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Top"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Content="&#xE895;"
+                                            Margin="0,5,5,0"
+                                            FontSize="16"
+                                            Height="32"
+                                            Click="Refresh_Click"/>
+                                        <TextBlock VerticalAlignment="Center">刷新</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                                >
+                                        <Button x:Name="FlyoutCopyLink"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top"
                                             FontFamily="Segoe MDL2 Assets"
@@ -135,46 +208,10 @@
                                             Click="CopyLink_Click"
                                             PointerExited="CopyLink_PointerExited"
                                             />
-                                    <TextBlock VerticalAlignment="Center">复制链接</TextBlock>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="Back"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE0A6;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="Back_Click"/>
-                                    <TextBlock VerticalAlignment="Center">后退</TextBlock>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="Forward"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE0AB;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="Forward_Click"/>
-                                    <TextBlock VerticalAlignment="Center">前进</TextBlock>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="Refresh"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE895;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="Refresh_Click"/>
-                                    <TextBlock VerticalAlignment="Center">刷新</TextBlock>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Name="OpenOutside"
+                                        <TextBlock VerticalAlignment="Center">复制链接</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Name="FlyoutOpenOutside"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top"
                                             FontFamily="Segoe MDL2 Assets"
@@ -184,10 +221,14 @@
                                             Height="32"
                                             Click="OpenOutside_Click"
                                             />
-                                    <TextBlock VerticalAlignment="Center">转到浏览器</TextBlock>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Name="SettingButton"
+                                        <TextBlock VerticalAlignment="Center">转到浏览器</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Name="FlyoutHistory" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE81C;" Margin="0,5,5,0" Height="32" Click="History_Click" />
+                                        <TextBlock VerticalAlignment="Center">浏览历史记录</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Name="FlyoutSettingButton"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top"
                                             FontFamily="Segoe MDL2 Assets"
@@ -197,20 +238,21 @@
                                             Height="32"
                                             Click="SettingButton_Click"
                                             />
-                                    <TextBlock VerticalAlignment="Center">选项</TextBlock>
+                                        <TextBlock VerticalAlignment="Center">选项</TextBlock>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
-
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
             </Grid>
 
         </Grid>
         <ListBox x:Name="TabBar"
                  Grid.Row="1"
                  Grid.Column="0"
-                 IsTabStop="True" Tapped="TabBar_Tapped">
+                 IsTabStop="True"
+                 Tapped="TabBar_Tapped">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Vertical"/>

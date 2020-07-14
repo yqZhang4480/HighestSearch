@@ -326,5 +326,15 @@ namespace 聚合搜索
         {
             SettingGrid.Visibility = Visibility.Collapsed;
         }
+        
+        private void History_Click(object sender, RoutedEventArgs e)
+        {
+            ;
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
+        }
     }
 }
