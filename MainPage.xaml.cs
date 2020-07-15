@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -40,6 +42,12 @@ namespace 聚合搜索
         public string ua;
     }
 
+    public struct ViewHistory
+    {
+        public string title;
+        public Uri uri;
+    }
+
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
@@ -47,8 +55,10 @@ namespace 聚合搜索
     {
         private Option[] options;
         private UA[] uas;
-        private int optionNum = 18;
-        private int uaNum = 5;
+        private readonly int optionNum = 18;
+        private readonly int uaNum = 5;
+        private Stack<ViewHistory> viewHistory = new Stack<ViewHistory>();
+        private Stack<string> searchHistory = new Stack<string>();
 
         private void HideTitleBar()
         {
@@ -79,6 +89,7 @@ namespace 聚合搜索
             //Windows.Storage.StorageFile sampleFile =
             //    await storageFolder.CreateFileAsync("UserOption.dat",
             //        Windows.Storage.CreationCollisionOption.OpenIfExists);
+
             options = new Option[optionNum];
 
             options[0].name = "百度";
@@ -173,8 +184,10 @@ namespace 聚合搜索
 
             for (int i = 0; i < optionNum; i++)
             {
-                var tb = new TextBlock();
-                tb.Text = options[i].name;
+                var tb = new TextBlock
+                {
+                    Text = options[i].name
+                };
                 TabBar.Items.Add(tb);
             }
 
@@ -191,14 +204,16 @@ namespace 聚合搜索
 
             uas[3].name = "手机（WAP）";
             uas[3].ua = "Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba";
-            
+
             uas[4].name = "手机（QQ浏览器）";
             uas[4].ua = "MQQBrowser/26 Mozilla/5.0 (Linux; U; Android 2.3.7; zh-cn; MB200 Build/GRJ22; CyanogenMod-7) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 
             for (int i = 0; i < uaNum; i++)
             {
-                var tb = new TextBlock();
-                tb.Text = uas[i].name;
+                var tb = new TextBlock
+                {
+                    Text = uas[i].name
+                };
                 UACB.Items.Add(tb);
             }
         }
@@ -212,6 +227,7 @@ namespace 聚合搜索
             Forward.IsEnabled = false;
             this.HideTitleBar();
             SettingGrid.Visibility = Visibility.Collapsed;
+            HistoryGrid.Visibility = Visibility.Collapsed;
             TabBar.SelectedIndex = 0;
             UACB.SelectedIndex = 0;
             SearchBar.Text = "";
@@ -219,6 +235,7 @@ namespace 聚合搜索
 
         private void Search()
         {
+
             Uri uri;
             if (SearchBar.Text.Equals(""))
             {
@@ -232,7 +249,29 @@ namespace 聚合搜索
                     options[TabBar.SelectedIndex].url2
                 );
             }
+
             WV_GotoPage(uri);
+
+            if (searchHistory.Contains(SearchBar.Text))
+            {
+                searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => !p.Equals(SearchBar.Text)).ToArray().Reverse());
+            }
+            if (SearchBar.Text != null && SearchBar.Text != "")
+            {
+                searchHistory.Push(SearchBar.Text);
+            }
+
+            if (HistoryGrid.Visibility == Visibility.Visible)
+            {
+                if ((bool)ViewHistoryRB.IsChecked)
+                {
+                    PeekViewHistoryItems();
+                }
+                else if ((bool)SearchHistoryRB.IsChecked)
+                {
+                    PeekSearchHistoryItems();
+                }
+            }
         }
 
         private void TabBar_Tapped(object sender, TappedRoutedEventArgs e)
@@ -260,6 +299,22 @@ namespace 聚合搜索
             if (SearchBar.Text.Equals(""))
             {
                 Title.Text = $"聚合搜索 - {tb.Text}";
+            }
+
+            var h = new ViewHistory
+            {
+                title = WV.DocumentTitle,
+                uri = WV.Source
+            };
+            if (h.title == "" || h.title == null)
+            {
+                return;
+            }
+            viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => !p.title.Equals(h.title)).ToArray().Reverse());
+            viewHistory.Push(h);
+            if (HistoryGrid.Visibility == Visibility.Visible)
+            {
+                PeekViewHistoryItems();
             }
         }
 
@@ -353,7 +408,171 @@ namespace 聚合搜索
 
         private void History_Click(object sender, RoutedEventArgs e)
         {
-            ;
+            HistoryGrid.Visibility = Visibility.Visible;
         }
+
+        private void HistoryReturn_Click(object sender, RoutedEventArgs e)
+        {
+            HistoryGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void SearchBar_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            var a = (AutoSuggestBox)sender;
+            if (!EnableSuggest.IsOn)
+            {
+                a.ItemsSource = null;
+                return;
+            }
+            var filtered = searchHistory.ToArray().Where(p => p.Contains(a.Text)).ToArray();
+            a.ItemsSource = filtered;
+        }
+
+        private void SearchBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            Search();
+        }
+
+        private void TabManage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DeleteSelectedHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteSelectedHistoryFlyout.Hide();
+            Stack<string> textArray = new Stack<string>();
+            foreach (TextBlock tb in HistoryLB.SelectedItems)
+            {
+                textArray.Push(tb.Text);
+            }
+            if ((bool)SearchHistoryRB.IsChecked)
+            {
+                searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => !textArray.Contains(p)).ToArray().Reverse());
+                PeekSearchHistoryItems();
+            }
+            else if ((bool)ViewHistoryRB.IsChecked)
+            {
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => !textArray.Contains(p.title)).ToArray().Reverse());
+                PeekViewHistoryItems();
+            }
+        }
+
+        private void DeleteUnselectedHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteUnselectedHistoryFlyout.Hide();
+            Stack<string> textArray = new Stack<string>();
+            foreach (TextBlock tb in HistoryLB.SelectedItems)
+            {
+                textArray.Push(tb.Text);
+            }
+            if ((bool)SearchHistoryRB.IsChecked)
+            {
+                searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => textArray.Contains(p)).ToArray().Reverse());
+                PeekSearchHistoryItems();
+            }
+            else if ((bool)ViewHistoryRB.IsChecked)
+            {
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => textArray.Contains(p.title)).ToArray().Reverse());
+                PeekViewHistoryItems();
+            }
+        }
+
+        private void DeleteHalfHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteHalfHistoryFlyout.Hide();
+            if ((bool)SearchHistoryRB.IsChecked)
+            {
+                searchHistory = new Stack<string>(searchHistory.ToArray());
+                for (int i = searchHistory.Count / 2; i >= 0; i--)
+                {
+                    searchHistory.Pop();
+                }
+                searchHistory = new Stack<string>(searchHistory.ToArray());
+                PeekSearchHistoryItems();
+            }
+            else if ((bool)ViewHistoryRB.IsChecked)
+            {
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray());
+                for (int i = viewHistory.Count / 2 - 1; i >= 0; i--)
+                {
+                    viewHistory.Pop();
+                }
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray());
+                PeekViewHistoryItems();
+            }
+        }
+
+        private void PeekSearchHistoryItems()
+        {
+            HistoryLB.Items.Clear();
+            Stack<string> s = new Stack<string>(searchHistory.ToArray().Where(p => p.Contains(HistorySearchBar.Text)).ToArray().Reverse());
+            Stack<TextBlock> textBlocks = new Stack<TextBlock>(s.ToArray().Select(p => new TextBlock { Text = p, TextDecorations = Windows.UI.Text.TextDecorations.Underline }).ToArray().Reverse());
+
+            foreach (TextBlock tb in textBlocks)
+            {
+                tb.Tapped += new TappedEventHandler(this.SearchHistoryTextBlocks_Tapped);
+                HistoryLB.Items.Add(tb);
+            }
+            HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
+        }
+
+        private void PeekViewHistoryItems()
+        {
+            HistoryLB.Items.Clear();
+            Stack<ViewHistory> s = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => p.title.Contains(HistorySearchBar.Text)).ToArray().Reverse());
+            Stack<TextBlock> textBlocks = new Stack<TextBlock>(s.ToArray().Select(p => new TextBlock { Text = p.title, TextDecorations = Windows.UI.Text.TextDecorations.Underline }).ToArray().Reverse());
+
+            foreach (TextBlock tb in textBlocks)
+            {
+                tb.Tapped += new TappedEventHandler(this.ViewHistoryTextBlocks_Tapped);
+                HistoryLB.Items.Add(tb);
+            }
+
+            HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
+        }
+
+        private void SearchHistoryRB_Checked(object sender, RoutedEventArgs e)
+        {
+            PeekSearchHistoryItems();
+        }
+
+        private void ViewHistoryRB_Checked(object sender, RoutedEventArgs e)
+        {
+            PeekViewHistoryItems();
+        }
+
+        private void SearchHistoryTextBlocks_Tapped(object sender, RoutedEventArgs e)
+        {
+            var tb = (TextBlock)sender;
+            SearchBar.Text = tb.Text;
+            Search();
+        }
+
+        private void ViewHistoryTextBlocks_Tapped(object sender, RoutedEventArgs e)
+        {
+            var tb = (TextBlock)sender;
+            foreach (ViewHistory vh in viewHistory)
+            {
+                if (vh.title == tb.Text)
+                {
+                    WV_GotoPage(vh.uri);
+                    break;
+                }
+            }
+        }
+
+        private void HistorySearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if ((bool)ViewHistoryRB.IsChecked)
+            {
+                PeekViewHistoryItems();
+            }
+            else if ((bool)SearchHistoryRB.IsChecked)
+            {
+                PeekSearchHistoryItems();
+            }
+        }
+
     }
 }
