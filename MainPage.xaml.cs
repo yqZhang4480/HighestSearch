@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -24,173 +25,126 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 
-// https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
-
 namespace 聚合搜索
 {
-    public struct Option
+    #region classes
+    public struct Tab
     {
         public string name;
         public string home;
         public string url1;
         public string url2;
     }
-
     public struct UA
     {
         public string name;
         public string ua;
     }
-
     public struct ViewHistory
     {
         public string title;
         public Uri uri;
     }
+    #endregion
 
-    /// <summary>
-    /// 可用于自身或导航至 Frame 内部的空白页。
-    /// </summary>
     public sealed partial class MainPage : Page
     {
-        private Option[] options;
+        #region vars
+        private Stack<Tab> tabs = new Stack<Tab>();
         private UA[] uas;
         private readonly int optionNum = 18;
         private readonly int uaNum = 5;
         private Stack<ViewHistory> viewHistory = new Stack<ViewHistory>();
         private Stack<string> searchHistory = new Stack<string>();
 
+        private Windows.Storage.StorageFile searchHistoryFile;
+        private Windows.Storage.StorageFile viewHistoryFile;
+        private Windows.Storage.StorageFile TabFile;
+        #endregion
+
+        #region init
         private void HideTitleBar()
         {
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.ButtonForegroundColor = Colors.Red;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
         }
-
-        private void WV_GotoPage(Uri uri)
-        {
-            loadPR.IsActive = true;
-            var tb = (TextBlock)TabBar.SelectedItem;
-            Title.Text = $"聚合搜索 - {tb.Text} - 正在连接……";
-            Windows.Web.Http.HttpRequestMessage req = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
-            req.Headers.Referer = uri;
-            req.Headers.Add("User-Agent", uas[UACB.SelectedIndex].ua);
-
-            Back.IsEnabled = true;
-            Forward.IsEnabled = false;
-            WV.NavigateWithHttpRequestMessage(req);
-        }
-
         private async void OpenFile()
         {
-            //Windows.Storage.StorageFolder storageFolder =
-            //    Windows.Storage.ApplicationData.Current.LocalFolder;
-            //Windows.Storage.StorageFile sampleFile =
-            //    await storageFolder.CreateFileAsync("UserOption.dat",
-            //        Windows.Storage.CreationCollisionOption.OpenIfExists);
+            #region Open File
+            Windows.Storage.StorageFolder storageFolder =
+                Windows.Storage.ApplicationData.Current.LocalFolder;
+            searchHistoryFile =
+                await storageFolder.CreateFileAsync("SearchHistory.dat",
+                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+            viewHistoryFile =
+                await storageFolder.CreateFileAsync("ViewHistory.dat",
+                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+            TabFile =
+                await storageFolder.CreateFileAsync("Tabs.dat",
+                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+            #endregion
 
-            options = new Option[optionNum];
+            #region Search History
+            string shText = await Windows.Storage.FileIO.ReadTextAsync(searchHistoryFile);
+            searchHistory = new Stack<string>(shText.Split("\n"));
+            searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => !p.Equals("")));
+            #endregion
 
-            options[0].name = "百度";
-            options[0].home = "https://www.baidu.com/";
-            options[0].url1 = "https://www.baidu.com/s?ie=UTF-8&wd=";
-            options[0].url2 = "";
-
-            options[1].name = "搜狗";
-            options[1].home = "https://www.sogou.com/";
-            options[1].url1 = "https://www.sogou.com/web?query=";
-            options[1].url2 = "";
-
-            options[2].name = "360 搜索";
-            options[2].home = "https://www.so.com/";
-            options[2].url1 = "https://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=";
-            options[2].url2 = "";
-
-            options[3].name = "Bing 国内版";
-            options[3].home = "https://cn.bing.com/";
-            options[3].url1 = "https://cn.bing.com/search?q=";
-            options[3].url2 = "";
-
-            options[4].name = "Google";
-            options[4].home = "https://www.google.com/";
-            options[4].url1 = "https://www.google.com/search?q=";
-            options[4].url2 = "";
-
-            options[5].name = "搜狗·微信";
-            options[5].home = "https://weixin.sogou.com/";
-            options[5].url1 = "https://weixin.sogou.com/weixin?type=2&query=";
-            options[5].url2 = "";
-
-            options[6].name = "哔哩哔哩";
-            options[6].home = "https://www.bilibili.com/";
-            options[6].url1 = "https://search.bilibili.com/all?keyword=";
-            options[6].url2 = "";
-
-            options[7].name = "知乎";
-            options[7].home = "https://www.zhihu.com/";
-            options[7].url1 = "https://www.zhihu.com/search?q=";
-            options[7].url2 = "";
-
-            options[8].name = "少数派";
-            options[8].home = "https://sspai.com/";
-            options[8].url1 = "https://sspai.com/search/post/";
-            options[8].url2 = "";
-
-            options[9].name = "36氪";
-            options[9].home = "https://36kr.com/";
-            options[9].url1 = "https://36kr.com/search/articles/";
-            options[9].url2 = "";
-
-            options[10].name = "简书";
-            options[10].home = "https://www.jianshu.com/";
-            options[10].url1 = "https://www.jianshu.com/search?q=";
-            options[10].url2 = "";
-
-            options[11].name = "微博";
-            options[11].home = "https://www.weibo.com/";
-            options[11].url1 = "https://s.weibo.com/weibo?q=";
-            options[11].url2 = "";
-
-            options[12].name = "今日头条";
-            options[12].home = "https://www.toutiao.com/";
-            options[12].url1 = "https://www.toutiao.com/search/?keyword=";
-            options[12].url2 = "";
-
-            options[13].name = "天涯社区";
-            options[13].home = "https://bbs.tianya.cn/";
-            options[13].url1 = "https://search.tianya.cn/bbs?q=";
-            options[13].url2 = "";
-
-            options[14].name = "CSDN";
-            options[14].home = "https://www.csdn.net/";
-            options[14].url1 = "https://so.csdn.net/so/search/s.do?q=";
-            options[14].url2 = "";
-
-            options[15].name = "博客园";
-            options[15].home = "https://www.cnblogs.com/";
-            options[15].url1 = "https://zzk.cnblogs.com/s?t=b&w=";
-            options[15].url2 = "";
-
-            options[16].name = "Github";
-            options[16].home = "https://github.com/";
-            options[16].url1 = "https://github.com/search?q=";
-            options[16].url2 = "";
-
-            options[17].name = "Stack Overflow";
-            options[17].home = "https://stackoverflow.com/";
-            options[17].url1 = "https://stackoverflow.com/search?q=";
-            options[17].url2 = "";
-
-            for (int i = 0; i < optionNum; i++)
+            #region View History
+            string vhText = await Windows.Storage.FileIO.ReadTextAsync(viewHistoryFile);
+            string[] vhTextArray = vhText.Split("\n");
+            if (vhTextArray.Count() > 1)
             {
-                var tb = new TextBlock
+                foreach (string vht in vhTextArray)
                 {
-                    Text = options[i].name
-                };
-                TabBar.Items.Add(tb);
+                    string[] vhTextAA = vht.Split("\t");
+                    if (vhTextAA.Count() != 2)
+                    {
+                        continue;
+                    }
+                    viewHistory.Push(new ViewHistory { title = vhTextAA[0], uri = new Uri(vhTextAA[1]) });
+                }
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray());
             }
+            #endregion
 
+            #region History too much
+            if (viewHistory.Count() + searchHistory.Count() < 20000)
+            {
+                HistoryGrid.Visibility = Visibility.Collapsed;
+                HistoryNoticeTB.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                SearchHistoryRB.IsChecked = true;
+            }
+            #endregion
+
+            #region tabs
+            string tabsText = await Windows.Storage.FileIO.ReadTextAsync(TabFile);
+            string[] tabsTextArray = tabsText.Split("\n");
+
+            if (tabsTextArray.Count() > 1)
+            {
+                foreach (string tabst in tabsTextArray)
+                {
+                    string[] tabsTextAA = tabst.Split("\t");
+                    if (tabsTextAA.Count() != 4)
+                    {
+                        continue;
+                    }
+
+                    tabs.Push(new Tab { name = tabsTextAA[0], home = tabsTextAA[1], url1 = tabsTextAA[2], url2 = tabsTextAA[3] });
+                }
+                tabs = new Stack<Tab>(tabs.ToArray());
+                PickTabItems();
+            }
+            #endregion
+
+            #region UAs
             uas = new UA[uaNum];
 
             uas[0].name = "电脑（Chrome）";
@@ -216,37 +170,140 @@ namespace 聚合搜索
                 };
                 UACB.Items.Add(tb);
             }
+            #endregion
         }
-
         public MainPage()
         {
-            this.InitializeComponent();
             this.OpenFile();
+            this.InitializeComponent();
+            this.HideTitleBar();
 
             Back.IsEnabled = false;
             Forward.IsEnabled = false;
-            this.HideTitleBar();
             SettingGrid.Visibility = Visibility.Collapsed;
-            HistoryGrid.Visibility = Visibility.Collapsed;
-            TabBar.SelectedIndex = 0;
+            TabManageGrid.Visibility = Visibility.Collapsed;
             UACB.SelectedIndex = 0;
+            TabBar.SelectedIndex = 0;
             SearchBar.Text = "";
         }
+        #endregion
 
-        private void Search()
+        #region Save Files
+        private async Task SaveViewHistory()
         {
+            string vhToString = "";
+            foreach (ViewHistory vh in viewHistory.ToArray())
+            {
+                vhToString += vh.title + "\t" + vh.uri.AbsoluteUri + "\n";
+            }
+            await Windows.Storage.FileIO.WriteTextAsync(viewHistoryFile, vhToString);
+        }
+        private async Task SaveSearchHistory()
+        {
+            string shToString = "";
+            foreach (string sh in searchHistory.ToArray())
+            {
+                shToString += sh + "\n";
+            }
+            await Windows.Storage.FileIO.WriteTextAsync(searchHistoryFile, shToString);
+        }
+        private async Task SaveTabs()
+        {
+            string tabsToString = "";
+            foreach (Tab tab in tabs.ToArray())
+            {
+                tabsToString += tab.name + "\t" + tab.home + "\t" + tab.url1 + "\t" + tab.url2 + "\n";
+            }
+            await Windows.Storage.FileIO.WriteTextAsync(TabFile, tabsToString);
+        }
+        #endregion
 
+        #region Title Buttons
+        private void folder_Click(object sender, RoutedEventArgs e)
+        {
+            if (TabBar.Visibility == Visibility.Collapsed)
+            {
+                TabBar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TabBar.Visibility = Visibility.Collapsed;
+            }
+        }
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            WV_GotoPage(WV.Source);
+        }
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            Search();
+        }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            if (WV.CanGoBack)
+            {
+                WV.GoBack();
+            }
+            Forward.IsEnabled = true;
+            if (!WV.CanGoBack)
+            {
+                Back.IsEnabled = false;
+            }
+        }
+        private void Forward_Click(object sender, RoutedEventArgs e)
+        {
+            if (WV.CanGoForward)
+            {
+                WV.GoForward();
+            }
+            Back.IsEnabled = true;
+            if (!WV.CanGoForward)
+            {
+                Forward.IsEnabled = false;
+            }
+        }
+        private void OpenOutside_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.System.Launcher.LaunchUriAsync(WV.Source);
+        }
+        private void CopyLink_Click(object sender, RoutedEventArgs e)
+        {
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.SetText(WV.Source.ToString());
+            Clipboard.SetContent(dataPackage);
+
+            CopyLink.Content = "\uE10B";
+        }
+        private void CopyLink_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            CopyLink.Content = "\uE16F";
+        }
+        #endregion
+
+        #region Search
+        private async void Search()
+        {
             Uri uri;
             if (SearchBar.Text.Equals(""))
             {
-                uri = new Uri(options[TabBar.SelectedIndex].home);
+                try 
+                { 
+                    uri = new Uri(tabs.ElementAt(TabBar.SelectedIndex).home);
+                }
+                catch (UriFormatException)
+                {
+                    TabManageGrid.Visibility = Visibility.Visible;
+                    TabManageNotice.Visibility = Visibility.Visible;
+                    TabManageNotice.Text = "无法解析，请修正网址。";
+                    return;
+                }
             }
             else
             {
                 uri = new Uri(
-                    options[TabBar.SelectedIndex].url1 +
-                    SearchBar.Text +
-                    options[TabBar.SelectedIndex].url2
+                    tabs.ElementAt(TabBar.SelectedIndex).url1 +
+                    System.Web.HttpUtility.UrlEncode(SearchBar.Text) +
+                    tabs.ElementAt(TabBar.SelectedIndex).url2
                 );
             }
 
@@ -261,37 +318,87 @@ namespace 聚合搜索
                 searchHistory.Push(SearchBar.Text);
             }
 
+            await SaveSearchHistory();
+
             if (HistoryGrid.Visibility == Visibility.Visible)
             {
                 if ((bool)ViewHistoryRB.IsChecked)
                 {
-                    PeekViewHistoryItems();
+                    PickViewHistoryItems();
                 }
                 else if ((bool)SearchHistoryRB.IsChecked)
                 {
-                    PeekSearchHistoryItems();
+                    PickSearchHistoryItems();
                 }
             }
         }
-
+        private void SearchBar_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            var a = (AutoSuggestBox)sender;
+            if (!EnableSuggest.IsOn)
+            {
+                a.ItemsSource = null;
+                return;
+            }
+            var filtered = searchHistory.ToArray().Where(p => p.Contains(a.Text)).ToArray();
+            a.ItemsSource = filtered;
+        }
+        private void SearchBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            Search();
+        }
         private void TabBar_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Search();
         }
-
-        private void folder_Click(object sender, RoutedEventArgs e)
+        private void TabBar_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TabBar.Visibility == Visibility.Collapsed)
+            if (TabBar.SelectedIndex >= 0)
             {
-                TabBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                TabBar.Visibility = Visibility.Collapsed;
+                TabName.Text = tabs.ElementAt(TabBar.SelectedIndex).name;
+                TabHome.Text = tabs.ElementAt(TabBar.SelectedIndex).home;
+                TabUrl1.Text = tabs.ElementAt(TabBar.SelectedIndex).url1;
+                TabUrl2.Text = tabs.ElementAt(TabBar.SelectedIndex).url2;
             }
         }
+        #endregion
 
-        private void WV_LoadCompleted(object sender, NavigationEventArgs e)
+        #region WebView
+        private void WV_GotoPage(Uri uri)
+        {
+            loadPR.IsActive = true;
+            var tb = (TextBlock)TabBar.SelectedItem;
+            Title.Text = $"聚合搜索 - {tb.Text} - 正在连接……";
+            Windows.Web.Http.HttpRequestMessage req = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
+            req.Headers.Referer = uri;
+            if (UACB.SelectedIndex >= 0)
+            {
+                req.Headers.Add("User-Agent", uas[UACB.SelectedIndex].ua);
+            }
+            Back.IsEnabled = true;
+            Forward.IsEnabled = false;
+            try
+            {
+                WV.NavigateWithHttpRequestMessage(req);
+            }
+            catch (Exception)
+            {
+                TabManageGrid.Visibility = Visibility.Visible;
+                TabManageNotice.Visibility = Visibility.Visible;
+                TabManageNotice.Text = "未知错误，请尝试修正网址。";
+            }
+        }
+        private void WV_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
+        {
+            if (OpenLinkOutside.IsOn)
+            {
+                return;
+            }
+            args.Handled = true;
+            WebViewNewWindowRequestedEventArgs argss = args;
+            WV_GotoPage(argss.Uri);
+        }
+        private async void WV_LoadCompleted(object sender, NavigationEventArgs e)
         {
             loadPR.IsActive = false;
             var tb = (TextBlock)TabBar.SelectedItem;
@@ -310,61 +417,19 @@ namespace 聚合搜索
             {
                 return;
             }
+            if (h.title.Contains("\t") || h.title.Contains("\n"))
+            {
+                h.title.Replace('\t', ' ');
+                h.title.Replace('\n', ' ');
+            }
             viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => !p.title.Equals(h.title)).ToArray().Reverse());
             viewHistory.Push(h);
-            if (HistoryGrid.Visibility == Visibility.Visible)
+            await SaveViewHistory();
+            if (HistoryGrid.Visibility == Visibility.Visible && (bool)ViewHistoryRB.IsChecked)
             {
-                PeekViewHistoryItems();
+                PickViewHistoryItems();
             }
         }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            WV.Source = WV.Source;
-        }
-
-        private void WV_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
-        {
-            if (OpenLinkOutside.IsOn)
-            {
-                return;
-            }
-            args.Handled = true;
-            WebViewNewWindowRequestedEventArgs argss = args;
-            WV_GotoPage(argss.Uri);
-        }
-
-        private void Search_Click(object sender, RoutedEventArgs e)
-        {
-            Search();
-        }
-
-        private void Back_Click(object sender, RoutedEventArgs e)
-        {
-            if (WV.CanGoBack)
-            {
-                WV.GoBack();
-            }
-            Forward.IsEnabled = true;
-            if (!WV.CanGoBack)
-            {
-                Back.IsEnabled = false;
-            }
-        }
-
-        private void Forward_Click(object sender, RoutedEventArgs e)
-        {
-            if (WV.CanGoForward)
-            {
-                WV.GoForward();
-            }
-            Back.IsEnabled = true;
-            if (!WV.CanGoForward)
-            {
-                Forward.IsEnabled = false;
-            }
-        }
-
         private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Enter)
@@ -376,69 +441,41 @@ namespace 聚合搜索
                 Refresh_Click(null, null);
             }
         }
+        #endregion
 
-        private void OpenOutside_Click(object sender, RoutedEventArgs e)
-        {
-            Windows.System.Launcher.LaunchUriAsync(WV.Source);
-        }
-
-        private void CopyLink_Click(object sender, RoutedEventArgs e)
-        {
-            DataPackage dataPackage = new DataPackage();
-            dataPackage.SetText(WV.Source.ToString());
-            Clipboard.SetContent(dataPackage);
-
-            CopyLink.Content = "\uE10B";
-        }
-
-        private void CopyLink_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            CopyLink.Content = "\uE16F";
-        }
-
+        #region Setting
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
             SettingGrid.Visibility = Visibility.Visible;
         }
-
         private void SettingReturn_Click(object sender, RoutedEventArgs e)
         {
             SettingGrid.Visibility = Visibility.Collapsed;
         }
+        #endregion
 
+        #region History
         private void History_Click(object sender, RoutedEventArgs e)
         {
+            if (!(bool)SearchHistoryRB.IsChecked || !(bool)ViewHistoryRB.IsChecked)
+            {
+                SearchHistoryRB.IsChecked = true;
+            }
             HistoryGrid.Visibility = Visibility.Visible;
         }
-
         private void HistoryReturn_Click(object sender, RoutedEventArgs e)
         {
             HistoryGrid.Visibility = Visibility.Collapsed;
         }
-
-        private void SearchBar_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void SearchHistoryRB_Checked(object sender, RoutedEventArgs e)
         {
-            var a = (AutoSuggestBox)sender;
-            if (!EnableSuggest.IsOn)
-            {
-                a.ItemsSource = null;
-                return;
-            }
-            var filtered = searchHistory.ToArray().Where(p => p.Contains(a.Text)).ToArray();
-            a.ItemsSource = filtered;
+            PickSearchHistoryItems();
         }
-
-        private void SearchBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        private void ViewHistoryRB_Checked(object sender, RoutedEventArgs e)
         {
-            Search();
+            PickViewHistoryItems();
         }
-
-        private void TabManage_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void DeleteSelectedHistory_Click(object sender, RoutedEventArgs e)
+        private async void DeleteSelectedHistory_Click(object sender, RoutedEventArgs e)
         {
             DeleteSelectedHistoryFlyout.Hide();
             Stack<string> textArray = new Stack<string>();
@@ -449,16 +486,17 @@ namespace 聚合搜索
             if ((bool)SearchHistoryRB.IsChecked)
             {
                 searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => !textArray.Contains(p)).ToArray().Reverse());
-                PeekSearchHistoryItems();
+                await SaveSearchHistory();
+                PickSearchHistoryItems();
             }
             else if ((bool)ViewHistoryRB.IsChecked)
             {
                 viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => !textArray.Contains(p.title)).ToArray().Reverse());
-                PeekViewHistoryItems();
+                await SaveViewHistory();
+                PickViewHistoryItems();
             }
         }
-
-        private void DeleteUnselectedHistory_Click(object sender, RoutedEventArgs e)
+        private async void DeleteUnselectedHistory_Click(object sender, RoutedEventArgs e)
         {
             DeleteUnselectedHistoryFlyout.Hide();
             Stack<string> textArray = new Stack<string>();
@@ -469,41 +507,33 @@ namespace 聚合搜索
             if ((bool)SearchHistoryRB.IsChecked)
             {
                 searchHistory = new Stack<string>(searchHistory.ToArray().Where(p => textArray.Contains(p)).ToArray().Reverse());
-                PeekSearchHistoryItems();
+                await SaveSearchHistory();
+                PickSearchHistoryItems();
             }
             else if ((bool)ViewHistoryRB.IsChecked)
             {
                 viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => textArray.Contains(p.title)).ToArray().Reverse());
-                PeekViewHistoryItems();
+                await SaveViewHistory();
+                PickViewHistoryItems();
             }
         }
-
-        private void DeleteHalfHistory_Click(object sender, RoutedEventArgs e)
+        private async void DeleteHalfHistory_Click(object sender, RoutedEventArgs e)
         {
             DeleteHalfHistoryFlyout.Hide();
             if ((bool)SearchHistoryRB.IsChecked)
             {
-                searchHistory = new Stack<string>(searchHistory.ToArray());
-                for (int i = searchHistory.Count / 2; i >= 0; i--)
-                {
-                    searchHistory.Pop();
-                }
-                searchHistory = new Stack<string>(searchHistory.ToArray());
-                PeekSearchHistoryItems();
+                searchHistory = new Stack<string>(searchHistory.ToArray().Take(searchHistory.Count / 2).Reverse());
+                await SaveSearchHistory();
+                PickSearchHistoryItems();
             }
             else if ((bool)ViewHistoryRB.IsChecked)
             {
-                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray());
-                for (int i = viewHistory.Count / 2 - 1; i >= 0; i--)
-                {
-                    viewHistory.Pop();
-                }
-                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray());
-                PeekViewHistoryItems();
+                viewHistory = new Stack<ViewHistory>(viewHistory.ToArray().Take(viewHistory.Count / 2).Reverse());
+                await SaveViewHistory();
+                PickViewHistoryItems();
             }
         }
-
-        private void PeekSearchHistoryItems()
+        private void PickSearchHistoryItems()
         {
             HistoryLB.Items.Clear();
             Stack<string> s = new Stack<string>(searchHistory.ToArray().Where(p => p.Contains(HistorySearchBar.Text)).ToArray().Reverse());
@@ -511,13 +541,12 @@ namespace 聚合搜索
 
             foreach (TextBlock tb in textBlocks)
             {
-                tb.Tapped += new TappedEventHandler(this.SearchHistoryTextBlocks_Tapped);
+                tb.Tapped += new TappedEventHandler(SearchHistoryTextBlocks_Tapped);
                 HistoryLB.Items.Add(tb);
             }
             HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
         }
-
-        private void PeekViewHistoryItems()
+        private void PickViewHistoryItems()
         {
             HistoryLB.Items.Clear();
             Stack<ViewHistory> s = new Stack<ViewHistory>(viewHistory.ToArray().Where(p => p.title.Contains(HistorySearchBar.Text)).ToArray().Reverse());
@@ -531,24 +560,12 @@ namespace 聚合搜索
 
             HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
         }
-
-        private void SearchHistoryRB_Checked(object sender, RoutedEventArgs e)
-        {
-            PeekSearchHistoryItems();
-        }
-
-        private void ViewHistoryRB_Checked(object sender, RoutedEventArgs e)
-        {
-            PeekViewHistoryItems();
-        }
-
         private void SearchHistoryTextBlocks_Tapped(object sender, RoutedEventArgs e)
         {
             var tb = (TextBlock)sender;
             SearchBar.Text = tb.Text;
             Search();
         }
-
         private void ViewHistoryTextBlocks_Tapped(object sender, RoutedEventArgs e)
         {
             var tb = (TextBlock)sender;
@@ -561,18 +578,120 @@ namespace 聚合搜索
                 }
             }
         }
-
         private void HistorySearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if ((bool)ViewHistoryRB.IsChecked)
             {
-                PeekViewHistoryItems();
+                PickViewHistoryItems();
             }
             else if ((bool)SearchHistoryRB.IsChecked)
             {
-                PeekSearchHistoryItems();
+                PickSearchHistoryItems();
             }
         }
+        #endregion
+
+        #region Tab Manage
+        private void PickTabItems()
+        {
+            TabBar.Items.Clear();
+            Stack<Tab> s = tabs;
+            Stack<TextBlock> textBlocks = new Stack<TextBlock>(s.ToArray().Select(p => new TextBlock { Text = p.name }).ToArray().Reverse());
+
+            foreach (TextBlock tb in textBlocks)
+            {
+                TabBar.Items.Add(tb);
+            }
+        }
+        private void TabManage_Click(object sender, RoutedEventArgs e)
+        {
+            TabManageGrid.Visibility = Visibility.Visible;
+            TabBar.Visibility = Visibility.Visible;
+        }
+        private void TabManageReturn_Click(object sender, RoutedEventArgs e)
+        {
+            TabManageGrid.Visibility = Visibility.Collapsed;
+        }
+        private async void TabAdd_Click(object sender, RoutedEventArgs e)
+        {
+            int index = TabBar.SelectedIndex;
+            List<Tab> tabs_ = tabs.ToList();
+            tabs_.Insert(index, new Tab { name = "新建搜索项", home = "about:blank", url1 = "about:blank", url2 = "" });
+            tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
+            await SaveTabs();
+            PickTabItems();
+            TabBar.SelectedIndex = index;
+        }
+        private async void TabSave_Click(object sender, RoutedEventArgs e)
+        {
+            int index = TabBar.SelectedIndex;
+            List<Tab> tabs_ = tabs.ToList();
+            tabs_.RemoveAt(TabBar.SelectedIndex);
+            tabs_.Insert(TabBar.SelectedIndex, new Tab { name = TabName.Text, home = TabHome.Text, url1 = TabUrl1.Text, url2 = TabUrl2.Text });
+            tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
+            await SaveTabs();
+            PickTabItems();
+            TabBar.SelectedIndex = index;
+        }
+        private async void TabDelete_Click(object sender, RoutedEventArgs e)
+        {
+            int index = TabBar.SelectedIndex;
+            List<Tab> tabs_ = tabs.ToList();
+            tabs_.RemoveAt(index);
+            tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
+            await SaveTabs();
+            PickTabItems();
+            TabBar.SelectedIndex = index <= 0 ? 0 : index - 1;
+        }
+        private async void TabMoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            int index = TabBar.SelectedIndex;
+            if (index - 1 >= 0)
+            {
+                var tabs_ = tabs.ToArray();
+                var temp = new Tab
+                {
+                    name = tabs_[index - 1].name,
+                    home = tabs_[index - 1].home,
+                    url1 = tabs_[index - 1].url1,
+                    url2 = tabs_[index - 1].url2
+                };
+                tabs_[index - 1] = tabs_[index];
+                tabs_[index] = temp;
+                tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
+
+                await SaveTabs();
+                PickTabItems();
+                TabBar.SelectedIndex = index - 1;
+            }
+        }
+        private async void TabMoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            int index = TabBar.SelectedIndex;
+            if (index + 1 < tabs.Count())
+            {
+                var tabs_ = tabs.ToArray();
+                var temp = new Tab
+                {
+                    name = tabs_[index].name,
+                    home = tabs_[index].home,
+                    url1 = tabs_[index].url1,
+                    url2 = tabs_[index].url2
+                };
+                tabs_[index] = tabs_[index + 1];
+                tabs_[index + 1] = temp;
+                tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
+
+                await SaveTabs();
+                PickTabItems();
+                TabBar.SelectedIndex = index + 1;
+            }
+        }
+        private void TabManageGrid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            TabManageNotice.Visibility = Visibility.Collapsed;
+        }
+        #endregion
 
     }
 }
