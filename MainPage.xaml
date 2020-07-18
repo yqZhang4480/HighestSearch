@@ -14,7 +14,7 @@
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualState x:Name="Large">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="650"/>
+                        <AdaptiveTrigger MinWindowWidth="800"/>
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState x:Name="Midium">
@@ -26,7 +26,7 @@
                         <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
                     </VisualState.Setters>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="400"/>
+                        <AdaptiveTrigger MinWindowWidth="600"/>
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState x:Name="Small">
@@ -61,7 +61,7 @@
         <Grid x:Name="SettingGrid"
               Grid.Row="1"
               Grid.Column="2"
-              Background="#337F7F7F"
+              Background="{ThemeResource SystemControlAcrylicWindowBrush}"
               MaxWidth="360">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -140,7 +140,7 @@
         <Grid Name="HistoryGrid"
               Grid.Row="1"
               Grid.Column="3"
-              Background="#0C7F7F7F"
+              Background="{ThemeResource SystemControlAcrylicWindowBrush}"
               HorizontalAlignment="Left"
               Width="360">
             <Grid.RowDefinitions>
@@ -232,6 +232,7 @@
             <ListBox Name="HistoryLB"
                      Grid.Row="3"
                      SelectionMode="Multiple"
+                      Background="{ThemeResource SystemControlAcrylicWindowBrush}"
                      HorizontalAlignment="Stretch"
                      />
 
@@ -260,6 +261,9 @@
                          VerticalAlignment="Bottom"/>
         </Grid>
 
+        <Image Grid.Row="1"
+               Grid.Column="4"
+               Source="/Assets/LargeTile.scale-400.png" />
         <WebView x:Name="WV"
                  Margin="1"
                  Grid.Row="1"
@@ -309,8 +313,10 @@
                 <AutoSuggestBox x:Name="SearchBar"
                                 Grid.Column="0"
                                 Margin="5,5,5,5"
+                                QueryIcon="Find"
                                 PlaceholderText="输入搜索内容，按 Enter 键发起搜索"
-                                TextChanged="SearchBar_TextChanged" QuerySubmitted="SearchBar_QuerySubmitted"/>
+                                TextChanged="SearchBar_TextChanged"
+                                QuerySubmitted="SearchBar_QuerySubmitted"/>
 
                 <Button x:Name="SearchButton"
                         Grid.Column="1"
@@ -321,7 +327,19 @@
                         Margin="0,5,5,0"
                         FontSize="16"
                         Height="32"
-                        Click="Search_Click" Visibility="Collapsed"/>
+                        Click="Search_Click"
+                        Visibility="Collapsed"/>
+                <Button x:Name="FullScreenButton"
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Top"
+                        FontFamily="Segoe MDL2 Assets"
+                        Content="&#xE1D9;"
+                        Margin="0,5,5,0"
+                        FontSize="16"
+                        Height="32"
+                        Click="FullScreenButton_Click"/>
+                
                 <StackPanel Name="TitleButtonSP"
                             Orientation="Horizontal"
                             Grid.Column="2">
@@ -402,7 +420,7 @@
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Name="FlyoutHistory" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE81C;" Margin="0,5,5,0" Height="32" Click="History_Click" />
-                                        <TextBlock VerticalAlignment="Center">浏览历史记录</TextBlock>
+                                        <TextBlock VerticalAlignment="Center">历史记录</TextBlock>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Name="FlyoutSettingButton"
@@ -436,8 +454,7 @@
                      IsTabStop="True"
                      Tapped="TabBar_Tapped"
                      Grid.Column="0"
-                     MaxWidth="120"
-                     SelectionChanged="TabBar_SelectionChanged">
+                     SelectionChanged="TabBar_SelectionChanged" MaxWidth="132" RightTapped="TabBar_RightTapped" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel Orientation="Vertical"/>
@@ -447,20 +464,20 @@
 
             <Grid Name="TabManageGrid"
                   Grid.Column="1"
-                  Background="#597F7F7F"
-                  Tapped="TabManageGrid_Tapped">
+                  Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                  Tapped="TabManageGrid_Tapped" MaxWidth="360" MinWidth="228">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <TextBlock Name="TabManageNotice"
                            Grid.Row="1"
                            FontWeight="Bold"
                            Margin="10"
-                           FontSize="16">
+                           FontSize="16" Visibility="Collapsed">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
                     </TextBlock.Foreground>
@@ -494,13 +511,13 @@
                            FontSize="22">
                     当前搜索项
                     </TextBlock>
-                    
+
                     <TextBlock Margin="0,0,0,5">
                     修改当前搜索项的信息。
                     </TextBlock>
                     <TextBlock Margin="0,0,0,10"
                                FontWeight="Bold">
-                    网址应以https://或http://开头。
+                    网址应以https:或http:开头。
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center"
                                Margin="0,0,10,0">
@@ -528,7 +545,7 @@
                         网址（搜索文本之后）
                     </TextBlock>
                     <TextBox Name="TabUrl2"
-                             Margin="0,0,10,0"/>
+                             Margin="0,0,10,2"/>
 
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center">
@@ -549,5 +566,19 @@
                 </StackPanel>
             </Grid>
         </Grid>
+        <Button Content="&#xE1D8;"
+                Name="ExitFullScreenButton"
+                FontFamily="Segoe MDL2 Assets"
+                Grid.Column="4"
+                Height="50"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                VerticalAlignment="Top"
+                Width="50"
+                HorizontalAlignment="Right"
+                Margin="0,10,10,0"
+                Background="#7F7F7F7F"
+                FontSize="22"
+                Click="FullScreenButton_Click"/>
     </Grid>
 </Page>

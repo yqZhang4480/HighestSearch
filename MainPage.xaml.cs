@@ -71,6 +71,29 @@ namespace 聚合搜索
             titleBar.ButtonForegroundColor = Colors.Red;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
         }
+        private void FullScreen()
+        {
+            ApplicationView view = ApplicationView.GetForCurrentView();
+
+            bool isInFullScreenMode = view.IsFullScreenMode;
+
+            if (isInFullScreenMode)
+            {
+                view.ExitFullScreenMode();
+                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+                TabBar.Visibility = Visibility.Visible;
+                TitleGrid.Visibility = Visibility.Visible;
+                ExitFullScreenButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                view.TryEnterFullScreenMode();
+                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
+                TabBar.Visibility = Visibility.Collapsed;
+                TitleGrid.Visibility = Visibility.Collapsed;
+                ExitFullScreenButton.Visibility = Visibility.Visible;
+            }
+        }
         private async void OpenFile()
         {
             #region Open File
@@ -112,7 +135,7 @@ namespace 聚合搜索
             #endregion
 
             #region History too much
-            if (viewHistory.Count() + searchHistory.Count() < 20000)
+            if (viewHistory.Count() + searchHistory.Count() < 5000)
             {
                 HistoryGrid.Visibility = Visibility.Collapsed;
                 HistoryNoticeTB.Visibility = Visibility.Collapsed;
@@ -185,6 +208,8 @@ namespace 聚合搜索
             UACB.SelectedIndex = 0;
             TabBar.SelectedIndex = 0;
             SearchBar.Text = "";
+            OpenOutside.IsEnabled = false;
+            FlyoutOpenOutside.IsEnabled = false;
         }
         #endregion
 
@@ -238,6 +263,10 @@ namespace 聚合搜索
         {
             Search();
         }
+        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            FullScreen();
+        }
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (WV.CanGoBack)
@@ -286,8 +315,8 @@ namespace 聚合搜索
             Uri uri;
             if (SearchBar.Text.Equals(""))
             {
-                try 
-                { 
+                try
+                {
                     uri = new Uri(tabs.ElementAt(TabBar.SelectedIndex).home);
                 }
                 catch (UriFormatException)
@@ -367,6 +396,8 @@ namespace 聚合搜索
         private void WV_GotoPage(Uri uri)
         {
             loadPR.IsActive = true;
+            OpenOutside.IsEnabled = true;
+            FlyoutOpenOutside.IsEnabled = true;
             var tb = (TextBlock)TabBar.SelectedItem;
             Title.Text = $"聚合搜索 - {tb.Text} - 正在连接……";
             Windows.Web.Http.HttpRequestMessage req = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
@@ -596,7 +627,7 @@ namespace 聚合搜索
         {
             TabBar.Items.Clear();
             Stack<Tab> s = tabs;
-            Stack<TextBlock> textBlocks = new Stack<TextBlock>(s.ToArray().Select(p => new TextBlock { Text = p.name }).ToArray().Reverse());
+            Stack<TextBlock> textBlocks = new Stack<TextBlock>(s.ToArray().Select(p => new TextBlock { Text = p.name, FontSize = 13, TextWrapping = TextWrapping.WrapWholeWords }).ToArray().Reverse());
 
             foreach (TextBlock tb in textBlocks)
             {
@@ -604,6 +635,11 @@ namespace 聚合搜索
             }
         }
         private void TabManage_Click(object sender, RoutedEventArgs e)
+        {
+            TabManageGrid.Visibility = Visibility.Visible;
+            TabBar.Visibility = Visibility.Visible;
+        }
+        private void TabBar_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             TabManageGrid.Visibility = Visibility.Visible;
             TabBar.Visibility = Visibility.Visible;
