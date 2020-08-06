@@ -7,7 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    KeyDown="Page_KeyDown">
+    KeyDown="Page_KeyDown"
+    >
+
+    <Page.Resources>
+    </Page.Resources>
 
     <Grid>
         <VisualStateManager.VisualStateGroups>
@@ -34,6 +38,7 @@
                         <Setter Target="Back.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="Forward.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="Refresh.(UIElement.Visibility)" Value="Collapsed"/>
+                        <Setter Target="WVTabs.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="CopyLink.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="OpenOutside.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="History.(UIElement.Visibility)" Value="Collapsed"/>
@@ -46,6 +51,7 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -90,7 +96,8 @@
                         Content="管理搜索项"
                         HorizontalAlignment="Stretch"
                         Margin="0,0,10,10"
-                        Click="TabManage_Click"/>
+                        Click="TabManage_Click">
+                </Button>
 
                 <TextBlock Margin="0,20,0,10"
                            FontSize="22">浏览器标识（UA）</TextBlock>
@@ -109,7 +116,7 @@
                 </ComboBox>
 
                 <TextBlock Margin="0,20,0,10"
-                           FontSize="22">搜索建议</TextBlock>
+                           FontSize="22">输入建议</TextBlock>
                 <ToggleSwitch Name="EnableSuggest"
                               Margin="0,0,10,0"
                               OffContent="关"
@@ -117,7 +124,7 @@
                               IsOn="True"
                               HorizontalAlignment="Left"
                               VerticalAlignment="Top">
-                    提供基于搜索记录的建议。
+                    提供基于历史记录的建议。
                 </ToggleSwitch>
 
                 <TextBlock Margin="0,20,0,10"
@@ -133,9 +140,6 @@
 
             </StackPanel>
         </Grid>
-
-
-
 
         <Grid Name="HistoryGrid"
               Grid.Row="1"
@@ -159,21 +163,11 @@
                     Margin="0,13,0,10"
                     Background="Transparent"
                     Click="HistoryReturn_Click"/>
-            <TextBlock FontSize="36"
+            <TextBlock x:Name="textBlock" FontSize="36"
                        Margin="63,10,0,10"
                        VerticalAlignment="Stretch"
                        HorizontalAlignment="Left">
                 历史记录
-            </TextBlock>
-            <TextBlock Name="HistoryNoticeTB"
-                       Grid.Row="1"
-                       Margin="5"
-                       FontWeight="Bold"
-                       FontSize="16">
-                <TextBlock.Foreground>
-                    <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
-                </TextBlock.Foreground>
-                历史记录过多可能会影响运行速度，请及时清理。
             </TextBlock>
             <StackPanel Grid.Row="2"
                         Orientation="Horizontal"
@@ -232,9 +226,12 @@
             <ListBox Name="HistoryLB"
                      Grid.Row="3"
                      SelectionMode="Multiple"
-                      Background="{ThemeResource SystemControlAcrylicWindowBrush}"
                      HorizontalAlignment="Stretch"
-                     />
+                     Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                     BorderBrush="{ThemeResource ButtonRevealBorderBrush}"
+                     BorderThickness="3,3,3,3"
+                     >
+            </ListBox>
 
             <TextBlock Name="HistoryNum"
                        Grid.Row="4"
@@ -261,24 +258,70 @@
                          VerticalAlignment="Bottom"/>
         </Grid>
 
-        <Image Grid.Row="1"
-               Grid.Column="4"
-               Source="/Assets/LargeTile.scale-400.png" />
-        <WebView x:Name="WV"
-                 Margin="1"
-                 Grid.Row="1"
-                 Grid.Column="4"
-                 LoadCompleted="WV_LoadCompleted"
-                 NewWindowRequested="WV_NewWindowRequested"
-                 Visibility="Visible"/>
+        <Grid Name="WVGrid"
+              Grid.Row="1"
+              Grid.Column="4"
+              Background="Black">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="C0" Width="1*"/>
+                <ColumnDefinition x:Name="C1" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <WebView x:Name="WV1"
+                     Grid.Row="1"
+                     Grid.Column="0"
+                     LoadCompleted="WV_LoadCompleted"
+                     NewWindowRequested="WV_NewWindowRequested"
+                     Source="about:blank"
+                     GotFocus="WV_GotFocus"
+                     AllowDrop="True"
+                     Drop="WV_Drop"
+                     DragOver="WV_DragOver"
+                     ContentLoading="WV_ContentLoading"/>
+            <ProgressBar Name="WV1PB"
+                         Grid.Row="0"
+                         Grid.Column="0"
+                         Value="100"
+                         VerticalAlignment="Top"
+                         Visibility="Collapsed"
+                         Background="#FF7F7F7F"/>
+            <WebView x:Name="WV2"
+                     Grid.Row="1"
+                     Grid.Column="1"
+                     LoadCompleted="WV_LoadCompleted"
+                     NewWindowRequested="WV_NewWindowRequested"
+                     Source="about:blank"
+                     GotFocus="WV_GotFocus"
+                     Visibility="Visible"
+                     AllowDrop="True"
+                     Drop="WV_Drop"
+                     DragOver="WV_DragOver"
+                     ContentLoading="WV_ContentLoading"/>
+            <ProgressBar Name="WV2PB"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Value="0"
+                         VerticalAlignment="Top"
+                         Visibility="Collapsed"
+                         Background="#FF7F7F7F"/>
+        </Grid>
 
         <Grid x:Name="TitleGrid"
               Grid.Row="0"
               Grid.Column="0"
-              Grid.ColumnSpan="5">
+              Grid.ColumnSpan="5"
+              DragOver="TitleGrid_DragOver"
+              Drop="TitleGrid_Drop">
+              <!--AllowDrop="True"-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" x:Name="ErrorMessageGridRow"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -298,7 +341,6 @@
                     VerticalAlignment="Stretch"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE700;"
-                    Margin="0,5,0,5"
                     FontSize="16"
                     Click="folder_Click" Height="32" TabIndex="0"/>
             <Grid x:Name="ToolBar"
@@ -339,108 +381,117 @@
                         FontSize="16"
                         Height="32"
                         Click="FullScreenButton_Click"/>
-                
+
                 <StackPanel Name="TitleButtonSP"
                             Orientation="Horizontal"
                             Grid.Column="2">
                     <Button x:Name="Back" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE0A6;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Back_Click"/>
                     <Button x:Name="Forward" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE0AB;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Forward_Click"/>
                     <Button x:Name="Refresh" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE895;" Margin="0,5,5,0" FontSize="16" Height="32" Click="Refresh_Click"/>
-                    <Button x:Name="CopyLink" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE16F;" Margin="0,5,5,0" FontSize="16" Height="32" Click="CopyLink_Click" PointerExited="CopyLink_PointerExited" />
+                    <Button Name="WVTabs" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xECCD;" Margin="0,5,5,0" Height="32" >
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyout.Items>
+                                    <MenuFlyoutItem Name="OnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
+                                    <MenuFlyoutItem Name="OnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
+                                    <MenuFlyoutSeparator/>
+                                    <ToggleMenuFlyoutItem Name="WVTab1Toggle" Text="显示 标签页 1" IsChecked="True" Click="WVTabToggle_Click"/>
+                                    <ToggleMenuFlyoutItem Name="WVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
+                                </MenuFlyout.Items>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                    <!--"CopyLink" Button means "OpenLinkBar"...-->
+                    <Button x:Name="CopyLink" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE71B;" Margin="0,5,5,0" FontSize="16" Height="32" Click="CopyLink_Click" />
                     <Button Name="OpenOutside" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE12B;" Margin="0,5,5,0" Height="32" Click="OpenOutside_Click" />
                     <Button Name="History" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE81C;" Margin="0,5,5,0" Height="32" Click="History_Click" />
                     <Button Name="SettingButton" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE713;" Margin="0,5,5,0" Height="32" Click="SettingButton_Click" />
                     <Button Name="MoreFunctions" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" Content="&#xE712;" Margin="0,5,5,0" FontSize="16" Height="32" Visibility="Collapsed">
                         <Button.Flyout>
-                            <Flyout>
-                                <StackPanel Name="FlyoutButtonSP">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="FlyoutBack"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Top"
-                                                FontFamily="Segoe MDL2 Assets"
-                                                Content="&#xE0A6;"
-                                                Margin="0,5,5,0"
-                                                FontSize="16"
-                                                Height="32"
-                                                Click="Back_Click"/>
-                                        <TextBlock VerticalAlignment="Center">后退</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="FlyoutForward"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE0AB;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="Forward_Click"/>
-                                        <TextBlock VerticalAlignment="Center">前进</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="FlyoutRefresh"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE895;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="Refresh_Click"/>
-                                        <TextBlock VerticalAlignment="Center">刷新</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal"
-                                                >
-                                        <Button x:Name="FlyoutCopyLink"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Content="&#xE16F;"
-                                            Margin="0,5,5,0"
-                                            FontSize="16"
-                                            Height="32"
-                                            Click="CopyLink_Click"
-                                            PointerExited="CopyLink_PointerExited"
-                                            />
-                                        <TextBlock VerticalAlignment="Center">复制链接</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Name="FlyoutOpenOutside"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
-                                            Content="&#xE12B;"
-                                            Margin="0,5,5,0"
-                                            Height="32"
-                                            Click="OpenOutside_Click"
-                                            />
-                                        <TextBlock VerticalAlignment="Center">转到浏览器</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Name="FlyoutHistory" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontFamily="Segoe MDL2 Assets" FontSize="16" Content="&#xE81C;" Margin="0,5,5,0" Height="32" Click="History_Click" />
-                                        <TextBlock VerticalAlignment="Center">历史记录</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Name="FlyoutSettingButton"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Top"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
-                                            Content="&#xE713;"
-                                            Margin="0,5,5,0"
-                                            Height="32"
-                                            Click="SettingButton_Click"
-                                            />
-                                        <TextBlock VerticalAlignment="Center">选项</TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Flyout>
+                            <MenuFlyout>
+                                <MenuFlyout.Items>
+                                    <MenuFlyoutItem Name="FlyoutBack" Icon="Back" Text="后退" Click="Back_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutForward" Icon="Forward" Text="前进" Click="Forward_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutRefresh" Icon="Refresh" Text="刷新" Click="Refresh_Click"/>
+                                    <MenuFlyoutSubItem Name="FlyoutWVTabs" Text="标签页">
+                                        <MenuFlyoutSubItem.Icon>
+                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECCD;"/>
+                                        </MenuFlyoutSubItem.Icon>
+                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
+                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
+                                        <MenuFlyoutSeparator/>
+                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab1Toggle" Text="显示 标签页 1" Click="WVTabToggle_Click"/>
+                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
+                                    </MenuFlyoutSubItem>
+                                    <MenuFlyoutItem Name="FlyoutCopyLink" Icon="Link" Text="地址栏" Click="CopyLink_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutOpenOutside" Text="在浏览器打开" Click="OpenOutside_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE12B;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Name="FlyoutHistory" Text="历史记录" Click="History_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE81C;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Name="FlyoutSettings" Icon="Setting" Text="选项" Click="SettingButton_Click"/>
+                                </MenuFlyout.Items>
+                            </MenuFlyout>
                         </Button.Flyout>
                     </Button>
                 </StackPanel>
             </Grid>
+
+            <Grid Name="LinkBarGrid"
+                  Grid.Row="2"
+                  Visibility="Collapsed"
+                  Grid.Column="1"
+                  Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <AutoSuggestBox Name="LinkBar"
+                                Grid.Column="0"
+                                Margin="5,0,5,0"
+                                HorizontalAlignment="Stretch"
+                                QuerySubmitted="LinkBar_QuerySubmitted"/>
+                <Button Name="GotoButton"
+                        Grid.Column="1"
+                        Content="&#xE111;"
+                        FontFamily="Segoe MDL2 Assets"
+                        Margin="0,0,5,0"
+                        HorizontalAlignment="Left"
+                        Click="GotoButton_Click" VerticalAlignment="Stretch"/>
+            </Grid>
+            <TextBlock x:Name="textBlock1" Grid.Row="3"
+                       Grid.Column="0"
+                       Text="&#xF167;"
+                       FontFamily="Segoe MDL2 Assets"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="16"
+                       Margin="0,3,0,3"/>
+            <StackPanel Grid.Row="3"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Margin="5,3,0,3"
+                        Orientation="Horizontal">
+                <TextBlock Name="ErrorMessage"
+                           FontSize="16"
+                           Text="出现了未知的错误。"
+                           FontWeight="Bold" VerticalAlignment="Center">
+                </TextBlock>
+
+                <Button Name="ErrorMessageButton"
+                        FontFamily="Segoe MDL2 Assets"
+                        Content="&#xE96D;"
+                        Click="ErrorMessageButton_Click"
+                        Background="Transparent"
+                        BorderBrush="{Binding Foreground, ElementName=textBlock1}"
+                        />
+
+            </StackPanel>
 
         </Grid>
         <Grid Grid.Row="1"
@@ -465,7 +516,8 @@
             <Grid Name="TabManageGrid"
                   Grid.Column="1"
                   Background="{ThemeResource SystemControlAcrylicWindowBrush}"
-                  Tapped="TabManageGrid_Tapped" MaxWidth="360" MinWidth="228">
+                  MaxWidth="360"
+                  MinWidth="228">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -473,15 +525,6 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Name="TabManageNotice"
-                           Grid.Row="1"
-                           FontWeight="Bold"
-                           Margin="10"
-                           FontSize="16" Visibility="Collapsed">
-                    <TextBlock.Foreground>
-                        <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
-                    </TextBlock.Foreground>
-                </TextBlock>
                 <Button Name="TabManageReturn"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="36"
@@ -579,6 +622,7 @@
                 Margin="0,10,10,0"
                 Background="#7F7F7F7F"
                 FontSize="22"
+                RequestedTheme="Light"
                 Click="FullScreenButton_Click"/>
     </Grid>
 </Page>
