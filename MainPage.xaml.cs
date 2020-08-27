@@ -58,9 +58,10 @@ namespace 聚合搜索
         private void HideTitleBar()
         {
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            Window.Current.SetTitleBar(loadPR);
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = Colors.Red;
+            titleBar.ButtonForegroundColor = Colors.Black;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
         }
         private void FullScreen()
@@ -204,7 +205,7 @@ namespace 聚合搜索
             UACB.SelectedIndex = 0;
             TabBar.SelectedIndex = 0;
             SearchBar.Text = "";
-            ErrorMessageGridRow.Height = new GridLength(0);
+            //ErrorMessageGridRow.Height = new GridLength(0);
             OpenOutside.IsEnabled = false;
             FlyoutOpenOutside.IsEnabled = false;
             Refresh.IsEnabled = false;
