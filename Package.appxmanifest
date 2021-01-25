@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="1b281d88-1069-41da-b2c3-afd96bf43c68"
-    Publisher="CN=zyQ"
-    Version="1.0.34.0" />
+    Name="21271dunp.536363C6385BB"
+    Publisher="CN=AA477F6F-880E-47BB-8527-8EED22CDE4E9"
+    Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="1b281d88-1069-41da-b2c3-afd96bf43c68" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="6e4a979c-cbd0-4fb7-88b4-dd3cb2a6641c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>聚合搜索</DisplayName>
-    <PublisherDisplayName>zyQ</PublisherDisplayName>
+    <PublisherDisplayName>dunp</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,7 +35,7 @@
         DisplayName="聚合搜索"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="聚合搜索" BackgroundColor="#eeeeee">
+        Description="聚合搜索"  BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo"/>
@@ -43,7 +43,7 @@
             <uap:ShowOn Tile="square310x310Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
-        <uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#eeeeee"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png"   BackgroundColor="#eeeeee"/>
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait"/>
           <uap:Rotation Preference="landscapeFlipped"/>

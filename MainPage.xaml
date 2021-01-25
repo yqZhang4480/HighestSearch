@@ -11,6 +11,8 @@
     RequestedTheme="Light"
     >
 
+    <!--20210123: 多语言、搜索项分组、搜索项导出/导入、选项持久化、浏览器消息、拖动链接、地址栏提示。-->
+
     <Page.Resources>
         <Style x:Name="TitleButtonStyle" TargetType="Button">
             <Setter Property="Template" Value="{StaticResource TitleButtonTemplate}"/>
@@ -318,11 +320,13 @@
     </Page.Resources>
 
     <Grid>
+
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualState x:Name="Large">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="950"/>
+                        <AdaptiveTrigger MinWindowWidth="1050"/>
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState x:Name="Midium">
@@ -334,7 +338,7 @@
                         <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
                     </VisualState.Setters>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="750"/>
+                        <AdaptiveTrigger MinWindowWidth="850"/>
                     </VisualState.StateTriggers>
                 </VisualState>
                 <VisualState x:Name="Small">
@@ -348,6 +352,7 @@
                         <Setter Target="History.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="SettingButton.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
+                        <Setter Target="SearchBar.(UIElement.PlaceholderText)" Value="输入搜索内容"/>
                     </VisualState.Setters>
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0"/>
@@ -379,7 +384,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
             </Grid.ColumnDefinitions>
-
+            <ScrollBar />
             <Button Name="SettingReturn"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="36"
@@ -430,18 +435,24 @@
                               VerticalAlignment="Top">
                     提供基于历史记录的建议。
                 </ToggleSwitch>
-
-                <TextBlock Margin="0,20,0,10"
-                           FontSize="22">链接跳转</TextBlock>
-                <ToggleSwitch Name="OpenLinkOutside"
-                              Margin="0,0,10,0"
-                              OffContent="关"
-                              OnContent="开"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Top">
-                    在外部浏览器打开链接。
-                </ToggleSwitch>
-
+                <Button x:Name="Comment"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,15,10,0" CornerRadius="15,15,15,15"
+                        Background="#33FFFFFF" BorderBrush="#66000000" Click="Comment_Click"
+                        >
+                    <StackPanel>
+                        <Image Source="/Assets/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
+                        <TextBlock Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
+                    </StackPanel>
+                </Button>
+                <Button Name="About"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,15,10,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" Margin="0,3,7,0" VerticalAlignment="Center" />
+                        <TextBlock Text="关于应用" HorizontalAlignment="Center" Margin="0" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
 
@@ -545,7 +556,7 @@
 
             <TextBox Name="HistorySearchBar"
                      Grid.Row="5"
-                     PlaceholderText="输入文本以在历史记录中进行筛选"
+                     PlaceholderText="在历史记录中筛选"
                      Margin="5"
                      TextChanged="HistorySearchBar_TextChanged" HorizontalAlignment="Stretch"/>
             <RadioButton x:Name="SearchHistoryRB"
@@ -585,14 +596,19 @@
                      AllowDrop="True"
                      Drop="WV_Drop"
                      DragOver="WV_DragOver"
-                     ContentLoading="WV_ContentLoading"/>
+                     ContentLoading="WV_ContentLoading"
+                     UnviewableContentIdentified="WV_UnviewableContentIdentified"
+                     UnsupportedUriSchemeIdentified="WV_UnsupportedUriSchemeIdentified"
+                     UnsafeContentWarningDisplaying="WV_UnsafeContentWarningDisplaying"
+                     />
             <ProgressBar Name="WV1PB"
                          Grid.Row="0"
                          Grid.Column="0"
                          Value="100"
                          VerticalAlignment="Top"
                          Visibility="Collapsed"
-                         Background="#FF7F7F7F"/>
+                         Background="White"
+                         Height="4" BorderThickness="1,1,1,1" BorderBrush="Black"/>
             <WebView x:Name="WV2"
                      Grid.Row="1"
                      Grid.Column="1"
@@ -604,14 +620,19 @@
                      AllowDrop="True"
                      Drop="WV_Drop"
                      DragOver="WV_DragOver"
-                     ContentLoading="WV_ContentLoading"/>
+                     UnviewableContentIdentified="WV_UnviewableContentIdentified"
+                     ContentLoading="WV_ContentLoading"
+                     UnsupportedUriSchemeIdentified="WV_UnsupportedUriSchemeIdentified"
+                     UnsafeContentWarningDisplaying="WV_UnsafeContentWarningDisplaying"
+                     />
             <ProgressBar Name="WV2PB"
                          Grid.Row="0"
                          Grid.Column="1"
                          Value="0"
                          VerticalAlignment="Top"
                          Visibility="Collapsed"
-                         Background="#FF7F7F7F"/>
+                         Background="White"
+                         Height="4" BorderThickness="1,1,1,1" BorderBrush="Black"/>
         </Grid>
 
         <Grid x:Name="TitleGrid"
@@ -626,7 +647,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto" x:Name="ErrorMessageGridRow"/>
+                <RowDefinition Height="0" x:Name="ErrorMessageGridRow"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -635,18 +656,12 @@
             </Grid.ColumnDefinitions>
 
             <ProgressRing Grid.Column="1" x:Name="loadPR" Margin="6,5,150,5" HorizontalAlignment="Right"/>
-            <TextBlock x:Name="Title"
-                       Grid.Column="1"
-                       Grid.Row="0"
-                       VerticalAlignment="Center"
-                       Margin="5,3,5,3" Visibility="Collapsed"><Run Text="聚合搜索"/></TextBlock>
             <Button x:Name="folder"
                     Grid.Row="0"
                     Style="{StaticResource TitleButtonStyle}"
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Stretch"
                     Content="&#xE700;"
-                    Click="folder_Click"
-                    Margin="0,0,0,0" Width="40"/>
+                    Click="folder_Click" FontWeight="Bold" VerticalAlignment="Stretch"/>
             <Grid x:Name="ToolBar"
                   Grid.Column="1"
                   Grid.Row="0">
@@ -664,7 +679,8 @@
                                 PlaceholderText="输入搜索内容，按Enter键发起搜索"
                                 TextChanged="SearchBar_TextChanged"
                                 QuerySubmitted="SearchBar_QuerySubmitted"
-                                Background="White"/>
+                                SuggestionChosen="SearchBar_SuggestionChosen"
+                                Background="White" MaxHeight="64"/>
 
                 <Button x:Name="SearchButton"
                         Grid.Column="1"
@@ -681,15 +697,16 @@
                     Style="{StaticResource TitleButtonStyle}"
                         Grid.Column="1"
                         Content="&#xE1D9;"
-                        Click="FullScreenButton_Click"/>
+                        Click="FullScreenButton_Click"
+                        ToolTipService.ToolTip="全屏"/>
 
                 <StackPanel Name="TitleButtonSP"
                             Orientation="Horizontal"
                             Grid.Column="2" Margin="0,0,180,0">
-                    <Button x:Name="Back" Style="{StaticResource TitleButtonStyle}" Content="&#xE0A6;"  Click="Back_Click"/>
-                    <Button x:Name="Forward" Style="{StaticResource TitleButtonStyle}" Content="&#xE0AB;" Click="Forward_Click"/>
-                    <Button x:Name="Refresh" Style="{StaticResource TitleButtonStyle}" Content="&#xE895;" Click="Refresh_Click"/>
-                    <Button Name="WVTabs" Style="{StaticResource TitleButtonStyle}" Content="&#xECCD;" >
+                    <Button x:Name="Back" ToolTipService.ToolTip="后退" Style="{StaticResource TitleButtonStyle}" Content="&#xE0A6;"  Click="Back_Click"/>
+                    <Button x:Name="Forward" ToolTipService.ToolTip="前进" Style="{StaticResource TitleButtonStyle}" Content="&#xE0AB;" Click="Forward_Click"/>
+                    <Button x:Name="Refresh" ToolTipService.ToolTip="刷新" Style="{StaticResource TitleButtonStyle}" Content="&#xE895;" Click="Refresh_Click"/>
+                    <Button Name="WVTabs" ToolTipService.ToolTip="标签页" Style="{StaticResource TitleButtonStyle}" Content="&#xECCD;" >
                         <Button.Flyout>
                             <MenuFlyout>
                                 <MenuFlyout.Items>
@@ -703,16 +720,16 @@
                         </Button.Flyout>
                     </Button>
                     <!--"CopyLink" Button means "OpenLinkBar"...-->
-                    <Button x:Name="CopyLink"
+                    <Button x:Name="CopyLink" ToolTipService.ToolTip="地址栏"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE71B;" Click="CopyLink_Click" />
-                    <Button Name="OpenOutside"
+                    <Button Name="OpenOutside" ToolTipService.ToolTip="在浏览器打开"
                     Style="{StaticResource TitleButtonStyle}"
                             Content="&#xE12B;" Click="OpenOutside_Click" />
-                    <Button Name="History"
+                    <Button Name="History" ToolTipService.ToolTip="历史记录"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE81C;" Click="History_Click" />
-                    <Button Name="SettingButton"
+                    <Button Name="SettingButton" ToolTipService.ToolTip="选项"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE713;" Click="SettingButton_Click" />
-                    <Button Name="MoreFunctions"
+                    <Button Name="MoreFunctions" ToolTipService.ToolTip="更多"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE712;" Visibility="Collapsed">
                         <Button.Flyout>
                             <MenuFlyout>
@@ -786,7 +803,7 @@
                         Orientation="Horizontal">
                 <TextBlock Name="ErrorMessage"
                            FontSize="16"
-                           Text="20200807: 待添加功能：文件下载、拖动链接、地址栏提示。"
+                           Text=""
                            FontWeight="Bold"
                            VerticalAlignment="Center">
                 </TextBlock>
@@ -934,7 +951,7 @@
                 Background="#7F7F7F7F"
                 FontSize="22"
                 RequestedTheme="Light"
-                Click="FullScreenButton_Click"/>
+                Click="ExitFullScreenButton_Click"/>
         <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Height="7" VerticalAlignment="Top" >
             <Rectangle.Fill>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

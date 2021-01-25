@@ -44,7 +44,7 @@ namespace 聚合搜索
         private UA[] uas;
         //private enum Layout { Horizontal, Tile };
         //private Layout layout = Layout.Horizontal;
-        private readonly int uaNum = 5;
+        private readonly int uaNum = 4;
         private Stack<ViewHistory> viewHistory = new Stack<ViewHistory>();
         private Stack<string> searchHistory = new Stack<string>();
         private WebView WV;
@@ -59,10 +59,10 @@ namespace 聚合搜索
         {
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
             Window.Current.SetTitleBar(loadPR);
-            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = Colors.Black;
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
+            titleBar.ButtonForegroundColor = Windows.UI.Colors.Black;
         }
         private void FullScreen()
         {
@@ -73,7 +73,6 @@ namespace 聚合搜索
             if (isInFullScreenMode)
             {
                 view.ExitFullScreenMode();
-                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
                 TabBar.Visibility = Visibility.Visible;
                 TitleGrid.Visibility = Visibility.Visible;
                 ExitFullScreenButton.Visibility = Visibility.Collapsed;
@@ -81,7 +80,6 @@ namespace 聚合搜索
             else
             {
                 view.TryEnterFullScreenMode();
-                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
                 TabBar.Visibility = Visibility.Collapsed;
                 TitleGrid.Visibility = Visibility.Collapsed;
                 ExitFullScreenButton.Visibility = Visibility.Visible;
@@ -161,26 +159,24 @@ namespace 聚合搜索
                 }
                 tabs = new Stack<Tab>(tabs.ToArray());
                 PickTabItems();
+
             }
             #endregion
 
             #region UAs
             uas = new UA[uaNum];
 
-            uas[0].name = "电脑（Chrome）";
-            uas[0].ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36 Edg/83.0.478.61";
+            uas[0].name = "Chrome";
+            uas[0].ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/83.0.4103.116";
 
-            uas[1].name = "电脑（IE）";
-            uas[1].ua = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
+            uas[1].name = "IE";
+            uas[1].ua = "Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
 
-            uas[2].name = "手机";
-            uas[2].ua = "Mozilla/5.0 (Linux; Android 7.0; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/48.0.2564.116 Mobile Safari/537.36 T7/10.3 SearchCraft/2.6.2 (Baidu; P1 7.0)";
+            uas[2].name = "Android";
+            uas[2].ua = "Mozilla/5.0 (Linux; Android 7.0; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 T7/10.3 SearchCraft/2.6.2 (Baidu; P1 7.0)";
 
-            uas[3].name = "手机（WAP）";
+            uas[3].name = "WAP";
             uas[3].ua = "Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba";
-
-            uas[4].name = "手机（QQ浏览器）";
-            uas[4].ua = "MQQBrowser/26 Mozilla/5.0 (Linux; U; Android 2.3.7; zh-cn; MB200 Build/GRJ22; CyanogenMod-7) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1";
 
             for (int i = 0; i < uaNum; i++)
             {
@@ -198,14 +194,13 @@ namespace 聚合搜索
             this.OpenFile();
             this.InitializeComponent();
             this.HideTitleBar();
-
             WV = WV1;
             SettingGrid.Visibility = Visibility.Collapsed;
             TabManageGrid.Visibility = Visibility.Collapsed;
             UACB.SelectedIndex = 0;
             TabBar.SelectedIndex = 0;
             SearchBar.Text = "";
-            //ErrorMessageGridRow.Height = new GridLength(0);
+            ErrorMessageGridRow.Height = new GridLength(0);
             OpenOutside.IsEnabled = false;
             FlyoutOpenOutside.IsEnabled = false;
             Refresh.IsEnabled = false;
@@ -339,6 +334,14 @@ namespace 聚合搜索
                 LinkBarGrid.Visibility = Visibility.Collapsed;
             }
         }
+        private void ExitFullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationView view = ApplicationView.GetForCurrentView();
+            view.ExitFullScreenMode();
+            TabBar.Visibility = Visibility.Visible;
+            TitleGrid.Visibility = Visibility.Visible;
+            ExitFullScreenButton.Visibility = Visibility.Collapsed;
+        }
         #endregion
 
         #region Error Message Grid Row
@@ -379,25 +382,25 @@ namespace 聚合搜索
         private async void Search()
         {
             Uri uri;
-            if (SearchBar.Text.Equals(""))
+            try
             {
-                try
+                if (SearchBar.Text.Equals(""))
                 {
                     uri = new Uri(tabs.ElementAt(TabBar.SelectedIndex).home);
                 }
-                catch (UriFormatException)
+                else
                 {
-                    PutErrorMessage("无法解析网址，请修正搜索项。");
-                    return;
+                    uri = new Uri(
+                        tabs.ElementAt(TabBar.SelectedIndex).url1 +
+                        System.Web.HttpUtility.UrlEncode(SearchBar.Text) +
+                        tabs.ElementAt(TabBar.SelectedIndex).url2
+                    );
                 }
             }
-            else
+            catch (UriFormatException)
             {
-                uri = new Uri(
-                    tabs.ElementAt(TabBar.SelectedIndex).url1 +
-                    System.Web.HttpUtility.UrlEncode(SearchBar.Text) +
-                    tabs.ElementAt(TabBar.SelectedIndex).url2
-                );
+                PutErrorMessage("无法解析网址，请修正搜索项。");
+                return;
             }
 
             WV_GotoPage(uri);
@@ -436,6 +439,10 @@ namespace 聚合搜索
             var filtered = searchHistory.ToArray().Where(p => p.Contains(a.Text)).ToArray();
             a.ItemsSource = filtered;
         }
+        private void SearchBar_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            sender.Text = (string)args.SelectedItem;
+        }
         private void SearchBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             Search();
@@ -468,7 +475,6 @@ namespace 聚合搜索
             FlyoutRefresh.IsEnabled = true;
             LinkBar.Text = WV.Source.ToString();
             var tb = (TextBlock)TabBar.SelectedItem;
-            Title.Text = $"聚合搜索 - {tb.Text} - 正在连接……";
             Windows.Web.Http.HttpRequestMessage req = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
             req.Headers.Referer = uri;
             if (UACB.SelectedIndex >= 0)
@@ -487,10 +493,6 @@ namespace 聚合搜索
         }
         private void WV_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
         {
-            if (OpenLinkOutside.IsOn)
-            {
-                return;
-            }
             args.Handled = true;
             WebViewNewWindowRequestedEventArgs argss = args;
             WV_GotoPage(argss.Uri);
@@ -504,10 +506,8 @@ namespace 聚合搜索
             CheckNavigationButtonState();
             loadPR.IsActive = false;
             var tb = (TextBlock)TabBar.SelectedItem;
-            Title.Text = $"聚合搜索 - {tb.Text} - {SearchBar.Text}";
             if (SearchBar.Text.Equals(""))
             {
-                Title.Text = $"聚合搜索 - {tb.Text}";
             }
 
             var h = new ViewHistory
@@ -546,6 +546,19 @@ namespace 聚合搜索
         private void WV_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
             CheckNavigationButtonState();
+        }
+        
+        private void WV_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
+        {
+            PutErrorMessage("检测到此应用不支持的内容（如下载文件等）。您可以选择在浏览器打开此网页。");
+        }
+        private void WV_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
+        {
+            PutErrorMessage("不支持此类URI。您可以选择在浏览器打开此网页。");
+        }
+        private void WV_UnsafeContentWarningDisplaying(WebView sender, object args)
+        {
+            PutErrorMessage("此站点不安全。");
         }
         #endregion
 
@@ -707,7 +720,7 @@ namespace 聚合搜索
         private void HistoryTextBlocks_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             var tb = (TextBlock)sender;
-            tb.Foreground = Title.Foreground;
+            tb.Foreground = textBlock.Foreground;
         }
         #endregion
 
@@ -996,7 +1009,6 @@ namespace 聚合搜索
                 WV_GotoPage(await e.DataView.GetWebLinkAsync());
             }
         }
-
         private void WV_DragOver(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = DataPackageOperation.Link;
@@ -1005,7 +1017,6 @@ namespace 聚合搜索
             e.DragUIOverride.IsCaptionVisible = true;
             e.DragUIOverride.IsContentVisible = true;
         }
-
         private void TitleGrid_DragOver(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = DataPackageOperation.Link;
@@ -1014,13 +1025,17 @@ namespace 聚合搜索
             e.DragUIOverride.IsCaptionVisible = true;
             e.DragUIOverride.IsContentVisible = true;
         }
-
         private async void TitleGrid_Drop(object sender, DragEventArgs e)
         {
             if (e.DataView.Contains(StandardDataFormats.WebLink))
             {
                 WV_GotoPage(await e.DataView.GetWebLinkAsync());
             }
+        }
+
+        private void Comment_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
         }
     }
 }
