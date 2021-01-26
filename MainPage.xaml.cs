@@ -1040,7 +1040,7 @@ namespace 聚合搜索
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
+            Launcher.LaunchUriAsync(new Uri("https://github.com/CS4480/Union-Find-Sets"));
         }
 
         private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
