@@ -432,7 +432,7 @@
                               OnContent="开"
                               IsOn="True"
                               HorizontalAlignment="Left"
-                              VerticalAlignment="Top">
+                              VerticalAlignment="Top" Toggled="EnableSuggest_Toggled">
                     提供基于历史记录的建议。
                 </ToggleSwitch>
                 <Button x:Name="Comment"
@@ -447,7 +447,7 @@
                 </Button>
                 <Button Name="About"
                         HorizontalAlignment="Stretch"
-                        Margin="0,15,10,0">
+                        Margin="0,15,10,0" Click="About_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" Margin="0,3,7,0" VerticalAlignment="Center" />
                         <TextBlock Text="关于应用" HorizontalAlignment="Center" Margin="0" />

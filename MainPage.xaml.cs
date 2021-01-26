@@ -1037,5 +1037,19 @@ namespace 聚合搜索
         {
             Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
         }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
+        }
+
+        private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
+        {
+            // 防止建议框闪烁
+            if(((ToggleSwitch)sender).IsOn == false)
+            {
+                SearchBar.ItemsSource = null;
+            }
+        }
     }
 }
