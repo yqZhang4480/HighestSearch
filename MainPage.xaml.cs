@@ -169,8 +169,8 @@ namespace 聚合搜索
             uas[0].name = "Chrome";
             uas[0].ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/83.0.4103.116";
 
-            uas[1].name = "IE";
-            uas[1].ua = "Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
+            uas[1].name = "IE 10";
+            uas[1].ua = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
 
             uas[2].name = "Android";
             uas[2].ua = "Mozilla/5.0 (Linux; Android 7.0; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 T7/10.3 SearchCraft/2.6.2 (Baidu; P1 7.0)";
