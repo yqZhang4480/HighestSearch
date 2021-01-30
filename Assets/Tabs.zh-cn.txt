@@ -1,0 +1,7 @@
+百度	https://www.baidu.com/	https://www.baidu.com/s?ie=UTF-8&wd=	
+360 搜索	https://www.so.com/	https://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=	
+Bing 国内版	https://cn.bing.com/	https://cn.bing.com/search?q=	
+Google	https://www.google.com/	https://www.google.com/search?q=	
+搜狗·微信	https://weixin.sogou.com/	https://weixin.sogou.com/weixin?type=2&query=	
+哔哩哔哩	https://www.bilibili.com/	https://search.bilibili.com/all?keyword=	
+右键点击此处可管理搜索项	about:blank	因版权原因，请自行添加其他网站，感谢您的理解。	

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -88,17 +89,17 @@ namespace 聚合搜索
         private async void OpenFile()
         {
             #region Open File
-            Windows.Storage.StorageFolder storageFolder =
-                Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFolder storageFolder =
+                ApplicationData.Current.LocalFolder;
             searchHistoryFile =
                 await storageFolder.CreateFileAsync("SearchHistory.dat",
-                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+                    CreationCollisionOption.OpenIfExists);
             viewHistoryFile =
                 await storageFolder.CreateFileAsync("ViewHistory.dat",
-                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+                    CreationCollisionOption.OpenIfExists);
             TabFile =
                 await storageFolder.CreateFileAsync("Tabs.dat",
-                    Windows.Storage.CreationCollisionOption.OpenIfExists);
+                    CreationCollisionOption.OpenIfExists);
             #endregion
 
             #region Search History
@@ -138,10 +139,11 @@ namespace 聚合搜索
             #endregion
 
             #region tabs
-            string tabsText = await Windows.Storage.FileIO.ReadTextAsync(TabFile);
+            string tabsText = await FileIO.ReadTextAsync(TabFile);
             if (tabsText == "")
             {
-                tabsText = "百度\thttps://www.baidu.com/\thttps://www.baidu.com/s?ie=UTF-8&wd=\t\n360 搜索\thttps://www.so.com/\thttps://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=\t\nBing 国内版\thttps://cn.bing.com/\thttps://cn.bing.com/search?q=\t\nGoogle\thttps://www.google.com/\thttps://www.google.com/search?q=\t\n搜狗·微信\thttps://weixin.sogou.com/\thttps://weixin.sogou.com/weixin?type=2&query=\t\n哔哩哔哩\thttps://www.bilibili.com/\thttps://search.bilibili.com/all?keyword=\t\n右键点击此处可管理搜索项\tabout:blank\t因版权考虑，请自行添加其他网站，感谢您的理解。\t\n";
+                TabFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/tabs.zh-cn.txt"));
+                tabsText = await FileIO.ReadTextAsync(TabFile);
             }
             string[] tabsTextArray = tabsText.Split("\n");
 
