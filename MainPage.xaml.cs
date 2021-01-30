@@ -141,7 +141,7 @@ namespace 聚合搜索
             string tabsText = await Windows.Storage.FileIO.ReadTextAsync(TabFile);
             if (tabsText == "")
             {
-                tabsText = "百度\thttps://www.baidu.com/\thttps://www.baidu.com/s?ie=UTF-8&wd=\t\n搜狗\thttps://www.sogou.com/\thttps://www.sogou.com/web?query=\t\n360 搜索\thttps://www.so.com/\thttps://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=\t\nBing 国内版\thttps://cn.bing.com/\thttps://cn.bing.com/search?q=\t\nGoogle\thttps://www.google.com/\thttps://www.google.com/search?q=\t\n搜狗·微信\thttps://weixin.sogou.com/\thttps://weixin.sogou.com/weixin?type=2&query=\t\n哔哩哔哩\thttps://www.bilibili.com/\thttps://search.bilibili.com/all?keyword=\t\n知乎\thttps://www.zhihu.com/\thttps://www.zhihu.com/search?q=\t\n右键点击此处可管理搜索项\tabout:blank\tabout:blank\t\n";
+                tabsText = "百度\thttps://www.baidu.com/\thttps://www.baidu.com/s?ie=UTF-8&wd=\t\n360 搜索\thttps://www.so.com/\thttps://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=\t\nBing 国内版\thttps://cn.bing.com/\thttps://cn.bing.com/search?q=\t\nGoogle\thttps://www.google.com/\thttps://www.google.com/search?q=\t\n搜狗·微信\thttps://weixin.sogou.com/\thttps://weixin.sogou.com/weixin?type=2&query=\t\n哔哩哔哩\thttps://www.bilibili.com/\thttps://search.bilibili.com/all?keyword=\t\n右键点击此处可管理搜索项\tabout:blank\t因版权考虑，请自行添加其他网站，感谢您的理解。\t\n";
             }
             string[] tabsTextArray = tabsText.Split("\n");
 
@@ -342,6 +342,24 @@ namespace 聚合搜索
             TitleGrid.Visibility = Visibility.Visible;
             ExitFullScreenButton.Visibility = Visibility.Collapsed;
         }
+        private void Comment_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("https://github.com/CS4480/Union-Find-Sets"));
+        }
+
+        private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
+        {
+            // 防止建议框闪烁
+            if (((ToggleSwitch)sender).IsOn == false)
+            {
+                SearchBar.ItemsSource = null;
+            }
+        }
         #endregion
 
         #region Error Message Grid Row
@@ -497,8 +515,12 @@ namespace 聚合搜索
             WebViewNewWindowRequestedEventArgs argss = args;
             WV_GotoPage(argss.Uri);
         }
-        private async void WV_LoadCompleted(object sender, NavigationEventArgs e)
+        private async void WV_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
+            if (!args.IsSuccess)
+            {
+                PutErrorMessage($"访问 {args.Uri} 时出现错误。\n信息：{args.WebErrorStatus}");
+            }
             if (WV.Source.Equals(new Uri("about:blank")))
             {
                 return;
@@ -1033,23 +1055,6 @@ namespace 聚合搜索
             }
         }
 
-        private void Comment_Click(object sender, RoutedEventArgs e)
-        {
-            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
-        }
-
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            Launcher.LaunchUriAsync(new Uri("https://github.com/CS4480/Union-Find-Sets"));
-        }
-
-        private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
-        {
-            // 防止建议框闪烁
-            if(((ToggleSwitch)sender).IsOn == false)
-            {
-                SearchBar.ItemsSource = null;
-            }
-        }
+       
     }
 }
