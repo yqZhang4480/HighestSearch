@@ -50,9 +50,9 @@ namespace 聚合搜索
         private Stack<string> searchHistory = new Stack<string>();
         private WebView WV;
 
-        private Windows.Storage.StorageFile searchHistoryFile;
-        private Windows.Storage.StorageFile viewHistoryFile;
-        private Windows.Storage.StorageFile TabFile;
+        private StorageFile searchHistoryFile;
+        private StorageFile viewHistoryFile;
+        private StorageFile TabFile;
         #endregion
 
         #region init
