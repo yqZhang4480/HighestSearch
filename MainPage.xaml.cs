@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI;
@@ -35,6 +36,32 @@ namespace 聚合搜索
         public string title;
         public Uri uri;
     }
+
+    public static class AppResources
+    {
+        private static ResourceLoader CurrentResourceLoader
+        {
+            get { return _loader ?? (_loader = ResourceLoader.GetForCurrentView("Resources")); }
+        }
+
+        private static ResourceLoader _loader;
+        private static readonly Dictionary<string, string> ResourceCache = new Dictionary<string, string>();
+
+        public static string GetString(string key)
+        {
+            if (ResourceCache.TryGetValue(key, out string s))
+            {
+                return s;
+            }
+            else
+            {
+                s = CurrentResourceLoader.GetString(key);
+                ResourceCache[key] = s;
+                return s;
+            }
+        }
+    }
+
     #endregion
 
     public sealed partial class MainPage : Page
@@ -133,7 +160,7 @@ namespace 聚合搜索
             }
             else
             {
-                PutErrorMessage("历史记录过多会影响程序的运行速度，请及时清理。");
+                PutErrorMessage(AppResources.GetString("Message_HistoryTooMuch"));
                 SearchHistoryRB.IsChecked = true;
             }
             #endregion
@@ -192,7 +219,6 @@ namespace 聚合搜索
         }
         public MainPage()
         {
-
             this.OpenFile();
             this.InitializeComponent();
             this.HideTitleBar();
@@ -389,7 +415,7 @@ namespace 聚合搜索
             }
             catch (Exception)
             {
-                PutErrorMessage("无法解析网址，请修正地址栏。");
+                PutErrorMessage(AppResources.GetString("Message_CannotResolve_LinkBar"));
             }
         }
         private void LinkBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -404,11 +430,7 @@ namespace 聚合搜索
             Uri uri;
             try
             {
-                if (SearchBar.Text.Equals(""))
-                {
-                    uri = new Uri(tabs.ElementAt(TabBar.SelectedIndex).home);
-                }
-                else
+                if (!tabs.ElementAt(TabBar.SelectedIndex).url1.Equals("") && !SearchBar.Text.Equals(""))
                 {
                     uri = new Uri(
                         tabs.ElementAt(TabBar.SelectedIndex).url1 +
@@ -416,10 +438,14 @@ namespace 聚合搜索
                         tabs.ElementAt(TabBar.SelectedIndex).url2
                     );
                 }
+                else
+                {
+                    uri = new Uri(tabs.ElementAt(TabBar.SelectedIndex).home);
+                }
             }
             catch (UriFormatException)
             {
-                PutErrorMessage("无法解析网址，请修正搜索项。");
+                PutErrorMessage(AppResources.GetString("Message_CannotResolve_Item"));
                 return;
             }
 
@@ -507,7 +533,7 @@ namespace 聚合搜索
             }
             catch (Exception)
             {
-                PutErrorMessage("网址解析出现了未知的错误，请尝试修正网址。");
+                PutErrorMessage(AppResources.GetString("Message_CannotResolve_Unknown"));
             }
             CheckNavigationButtonState();
         }
@@ -521,7 +547,7 @@ namespace 聚合搜索
         {
             if (!args.IsSuccess)
             {
-                PutErrorMessage($"访问 {args.Uri} 时出现错误。\n信息：{args.WebErrorStatus}");
+                PutErrorMessage(AppResources.GetString("Message_AccessFailed") + args.WebErrorStatus.ToString());
             }
             if (WV.Source.Equals(new Uri("about:blank")))
             {
@@ -530,15 +556,16 @@ namespace 聚合搜索
             CheckNavigationButtonState();
             loadPR.IsActive = false;
             var tb = (TextBlock)TabBar.SelectedItem;
-            if (SearchBar.Text.Equals(""))
-            {
-            }
 
             var h = new ViewHistory
             {
                 title = WV.DocumentTitle,
                 uri = WV.Source
             };
+            if (sender.Source.ToString().StartsWith("http://"))
+            {
+                PutErrorMessage(AppResources.GetString("Message_Unsafe"));
+            }
             if (h.title == "" || h.title == null)
             {
                 return;
@@ -574,15 +601,15 @@ namespace 聚合搜索
         
         private void WV_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
         {
-            PutErrorMessage("检测到此应用不支持的内容（如下载文件等）。您可以选择在浏览器打开此网页。");
+            PutErrorMessage(AppResources.GetString("Message_Unsupport_Content"));
         }
         private void WV_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
         {
-            PutErrorMessage("不支持此类URI。您可以选择在浏览器打开此网页。");
+            PutErrorMessage(AppResources.GetString("Message_Unsupport_URI"));
         }
         private void WV_UnsafeContentWarningDisplaying(WebView sender, object args)
         {
-            PutErrorMessage("此站点不安全。");
+            PutErrorMessage(AppResources.GetString("Message_Unsafe"));
         }
         #endregion
 
@@ -689,7 +716,7 @@ namespace 聚合搜索
                 tb.PointerExited += new PointerEventHandler(this.HistoryTextBlocks_PointerExited);
                 HistoryLB.Items.Add(tb);
             }
-            HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
+            HistoryNum.Text = HistoryLB.Items.Count + AppResources.GetString("HistoryNumResults");
         }
         private void PickViewHistoryItems()
         {
@@ -705,7 +732,7 @@ namespace 聚合搜索
                 HistoryLB.Items.Add(tb);
             }
 
-            HistoryNum.Text = "共" + HistoryLB.Items.Count + "条符合条件的记录。";
+            HistoryNum.Text = HistoryLB.Items.Count + AppResources.GetString("HistoryNumResults");
         }
         private void SearchHistoryTextBlocks_Tapped(object sender, RoutedEventArgs e)
         {
@@ -778,7 +805,7 @@ namespace 聚合搜索
         {
             int index = TabBar.SelectedIndex;
             List<Tab> tabs_ = tabs.ToList();
-            tabs_.Insert(index, new Tab { name = "新建搜索项", home = "about:blank", url1 = "about:blank", url2 = "" });
+            tabs_.Insert(index, new Tab { name = AppResources.GetString("NewItem"), home = "about:blank", url1 = "about:blank", url2 = "" });
             tabs = new Stack<Tab>(tabs_.ToArray().Reverse());
             await SaveTabs();
             PickTabItems();

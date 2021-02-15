@@ -320,8 +320,6 @@
     </Page.Resources>
 
     <Grid>
-
-
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualState x:Name="Large">
@@ -352,7 +350,7 @@
                         <Setter Target="History.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="SettingButton.(UIElement.Visibility)" Value="Collapsed"/>
                         <Setter Target="MoreFunctions.(UIElement.Visibility)" Value="Visible"/>
-                        <Setter Target="SearchBar.(UIElement.PlaceholderText)" Value="输入搜索内容"/>
+                        <Setter x:Uid="SearchBarVisualStateSetter_Small" Target="SearchBar.(UIElement.PlaceholderText)" Value="输入搜索内容"/>
                     </VisualState.Setters>
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0"/>
@@ -393,7 +391,8 @@
                     Background="Transparent"
                     Click="SettingReturn_Click"/>
             <TextBlock FontSize="36"
-                       Margin="63,10,0,10"
+                       x:Uid="SettingTitle"
+                       Margin="58,10,5,10"
                        VerticalAlignment="Stretch">
                 选项
             </TextBlock>
@@ -402,37 +401,42 @@
                         Margin="10,0,0,0">
 
                 <Button Name="TabManage"
-                        Content="管理搜索项"
+                        x:Uid="GotoTabManage"
                         HorizontalAlignment="Stretch"
                         Margin="0,0,10,10"
                         Click="TabManage_Click">
+                    管理搜索项
                 </Button>
 
-                <TextBlock Margin="0,20,0,10"
-                           FontSize="22">浏览器标识（UA）</TextBlock>
-                <TextBlock Margin="0,0,0,5">选择应用使用的浏览器标识。</TextBlock>
-                <TextBlock Margin="0,0,0,0"
-                           FontWeight="Bold">
-                    此项不适用于内部跳转链接，
+                <TextBlock Margin="0,20,0,10" x:Uid="UA"
+                           FontSize="22">
+                    浏览器标识（UA）
                 </TextBlock>
-                <TextBlock Margin="0,0,0,10"
+                <TextBlock x:Uid="UAwords1">
+                    选择应用使用的浏览器标识。
+                </TextBlock>
+                <TextBlock Margin="0,0,0,0" x:Uid="UAwords2"
                            FontWeight="Bold">
-                    UA不一致时请尝试刷新页面。
+                     此项不适用于内部跳转链接，<LineBreak/>不一致时请尝试刷新页面。
                 </TextBlock>
                 <ComboBox Name="UACB"
                           HorizontalAlignment="Stretch"
                           Margin="0,0,10,0">
                 </ComboBox>
 
-                <TextBlock Margin="0,20,0,10"
-                           FontSize="22">输入建议</TextBlock>
+                <TextBlock Margin="0,20,0,10" x:Uid="Suggest"
+                           FontSize="22">
+                    输入建议
+                </TextBlock>
                 <ToggleSwitch Name="EnableSuggest"
+                              x:Uid="SuggestToggleSwitchContent"
                               Margin="0,0,10,0"
-                              OffContent="关"
                               OnContent="开"
                               IsOn="True"
                               HorizontalAlignment="Left"
-                              VerticalAlignment="Top" Toggled="EnableSuggest_Toggled">
+                              VerticalAlignment="Top"
+                              Toggled="EnableSuggest_Toggled"
+                              >
                     提供基于历史记录的建议。
                 </ToggleSwitch>
                 <Button x:Name="Comment"
@@ -442,7 +446,7 @@
                         >
                     <StackPanel>
                         <Image Source="/Assets/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
-                        <TextBlock Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
+                        <TextBlock x:Uid="GotoStore" Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
                     </StackPanel>
                 </Button>
                 <Button Name="About"
@@ -450,7 +454,7 @@
                         Margin="0,15,10,0" Click="About_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" Margin="0,3,7,0" VerticalAlignment="Center" />
-                        <TextBlock Text="关于应用" HorizontalAlignment="Center" Margin="0" />
+                        <TextBlock x:Uid="About" Text="关于应用" HorizontalAlignment="Center" Margin="0" />
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -460,8 +464,7 @@
               Grid.Row="1"
               Grid.Column="3"
               Background="{ThemeResource SystemControlAcrylicWindowBrush}"
-              HorizontalAlignment="Left"
-              Width="360">
+              HorizontalAlignment="Stretch" Width="360">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -478,8 +481,10 @@
                     Margin="0,13,0,10"
                     Background="Transparent"
                     Click="HistoryReturn_Click"/>
-            <TextBlock x:Name="textBlock" FontSize="36"
-                       Margin="63,10,0,10"
+            <TextBlock FontSize="36"
+                       Name="textBlock"
+                       x:Uid="HistoryTitle"
+                       Margin="58,10,5,10"
                        VerticalAlignment="Stretch"
                        HorizontalAlignment="Left">
                 历史记录
@@ -489,11 +494,13 @@
                         Margin="0,0,0,5"
                         HorizontalAlignment="Center">
                 <Button Content="删除选中记录"
+                        x:Uid="DeleteSelected"
                         Margin="0,0,2,0">
                     <Button.Flyout>
                         <Flyout x:Name="DeleteSelectedHistoryFlyout">
                             <StackPanel>
                                 <Button Name="DeleteSelectedHistory"
+                                        x:Uid="DeleteSelectedHistory"
                                         FontWeight="Bold"
                                         Content="确认删除选中记录"
                                         Click="DeleteSelectedHistory_Click"/>
@@ -503,35 +510,39 @@
                 </Button>
 
                 <Button Content="删除未选中记录"
+                        x:Uid="DeleteUnselected"
                         Margin="2,0,2,0">
                     <Button.Flyout>
                         <Flyout x:Name="DeleteUnselectedHistoryFlyout">
                             <StackPanel>
                                 <Button Name="DeleteUnselectedHistory"
+                                        x:Uid="DeleteUnselectedHistory"
                                         FontWeight="Bold"
                                         Content="确认删除所有未选中记录"
                                         Click="DeleteUnselectedHistory_Click"
                                         Foreground="White"
                                         Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                                         HorizontalAlignment="Center"/>
-                                <TextBlock>未在该列表中显示的记录也会被删除。</TextBlock>
+                                <TextBlock x:Uid="DeleteUnselectedHistoryNotice">未在该列表中显示的记录也会被删除。</TextBlock>
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
                 </Button>
                 <Button Content="删除一半记录"
+                        x:Uid="DeleteHalf"
                         Margin="2,0,2,0">
                     <Button.Flyout>
                         <Flyout x:Name="DeleteHalfHistoryFlyout">
                             <StackPanel>
                                 <Button Name="DeleteHalfHistory"
+                                        x:Uid="DeleteHalfHistory"
                                         FontWeight="Bold"
                                         Content="确认删除后面一半的记录"
                                         Click="DeleteHalfHistory_Click"
                                         Foreground="White"
                                         Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                                         HorizontalAlignment="Center"/>
-                                <TextBlock>未在该列表中显示的记录也可能会被删除。</TextBlock>
+                                <TextBlock x:Uid="DeleteHalfHistoryNotice">未在该列表中显示的记录也可能会被删除。</TextBlock>
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
@@ -549,23 +560,39 @@
             </ListBox>
 
             <TextBlock Name="HistoryNum"
+                       x:Uid="HistoryNum"
                        Grid.Row="4"
                        Margin="5"
                        Text="未选取任何内容。"
                        HorizontalAlignment="Left"/>
 
             <TextBox Name="HistorySearchBar"
+                     x:Uid="HistorySearchBar"
                      Grid.Row="5"
                      PlaceholderText="在历史记录中筛选"
                      Margin="5"
-                     TextChanged="HistorySearchBar_TextChanged" HorizontalAlignment="Stretch"/>
+                     TextChanged="HistorySearchBar_TextChanged"
+                     HorizontalAlignment="Stretch"/>
+            <Rectangle Grid.Row="5"
+                       Height="5.5"
+                       VerticalAlignment="Bottom"
+                       Margin="5,0,5,0" >
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#99626262"/>
+                        <GradientStop Color="#00000000" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
             <RadioButton x:Name="SearchHistoryRB"
+                         x:Uid="SearchHistoryRB"
                          GroupName="HistoryRBGroup"
                          Content="搜索记录"
                          Checked="SearchHistoryRB_Checked"
                          Margin="235,7,0,0"
                          VerticalAlignment="Top"/>
             <RadioButton x:Name="ViewHistoryRB"
+                         x:Uid="ViewHistoryRB"
                          GroupName="HistoryRBGroup"
                          Content="浏览记录"
                          Checked="ViewHistoryRB_Checked"
@@ -661,7 +688,9 @@
                     Style="{StaticResource TitleButtonStyle}"
                     HorizontalAlignment="Stretch"
                     Content="&#xE700;"
-                    Click="folder_Click" FontWeight="Bold" VerticalAlignment="Stretch"/>
+                    Click="folder_Click"
+                    FontWeight="Bold"
+                    VerticalAlignment="Stretch"/>
             <Grid x:Name="ToolBar"
                   Grid.Column="1"
                   Grid.Row="0">
@@ -673,10 +702,10 @@
 
                 <AutoSuggestBox Style="{StaticResource TitleSearchBarStyle}"
                                 x:Name="SearchBar"
+                                x:Uid="SearchBar"
                                 Grid.Column="0"
                                 Margin="0,3,5,3"
                                 QueryIcon="Find"
-                                PlaceholderText="输入搜索内容，按Enter键发起搜索"
                                 TextChanged="SearchBar_TextChanged"
                                 QuerySubmitted="SearchBar_QuerySubmitted"
                                 SuggestionChosen="SearchBar_SuggestionChosen"
@@ -694,7 +723,8 @@
                         Click="Search_Click"
                         Visibility="Collapsed"/>
                 <Button x:Name="FullScreenButton"
-                    Style="{StaticResource TitleButtonStyle}"
+                        x:Uid="FullScreenButton"
+                        Style="{StaticResource TitleButtonStyle}"
                         Grid.Column="1"
                         Content="&#xE1D9;"
                         Click="FullScreenButton_Click"
@@ -703,62 +733,62 @@
                 <StackPanel Name="TitleButtonSP"
                             Orientation="Horizontal"
                             Grid.Column="2" Margin="0,0,180,0">
-                    <Button x:Name="Back" ToolTipService.ToolTip="后退" Style="{StaticResource TitleButtonStyle}" Content="&#xE0A6;"  Click="Back_Click"/>
-                    <Button x:Name="Forward" ToolTipService.ToolTip="前进" Style="{StaticResource TitleButtonStyle}" Content="&#xE0AB;" Click="Forward_Click"/>
-                    <Button x:Name="Refresh" ToolTipService.ToolTip="刷新" Style="{StaticResource TitleButtonStyle}" Content="&#xE895;" Click="Refresh_Click"/>
-                    <Button Name="WVTabs" ToolTipService.ToolTip="标签页" Style="{StaticResource TitleButtonStyle}" Content="&#xECCD;" >
+                    <Button x:Name="Back" x:Uid="Back" ToolTipService.ToolTip="后退" Style="{StaticResource TitleButtonStyle}" Content="&#xE0A6;"  Click="Back_Click"/>
+                    <Button x:Name="Forward" x:Uid="Forward" ToolTipService.ToolTip="前进" Style="{StaticResource TitleButtonStyle}" Content="&#xE0AB;" Click="Forward_Click"/>
+                    <Button x:Name="Refresh" x:Uid="Refresh" ToolTipService.ToolTip="刷新" Style="{StaticResource TitleButtonStyle}" Content="&#xE895;" Click="Refresh_Click"/>
+                    <Button Name="WVTabs" x:Uid="WVTabs" ToolTipService.ToolTip="标签页" Style="{StaticResource TitleButtonStyle}" Content="&#xECCD;" >
                         <Button.Flyout>
                             <MenuFlyout>
                                 <MenuFlyout.Items>
-                                    <MenuFlyoutItem Name="OnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
-                                    <MenuFlyoutItem Name="OnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
+                                    <MenuFlyoutItem Name="OnlyShowWV1" x:Uid="OnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
+                                    <MenuFlyoutItem Name="OnlyShowWV2" x:Uid="OnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
                                     <MenuFlyoutSeparator/>
-                                    <ToggleMenuFlyoutItem Name="WVTab1Toggle" Text="显示 标签页 1" IsChecked="True" Click="WVTabToggle_Click"/>
-                                    <ToggleMenuFlyoutItem Name="WVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
+                                    <ToggleMenuFlyoutItem Name="WVTab1Toggle" x:Uid="WVTab1Toggle" Text="显示 标签页 1" IsChecked="True" Click="WVTabToggle_Click"/>
+                                    <ToggleMenuFlyoutItem Name="WVTab2Toggle" x:Uid="WVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
                                 </MenuFlyout.Items>
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
                     <!--"CopyLink" Button means "OpenLinkBar"...-->
-                    <Button x:Name="CopyLink" ToolTipService.ToolTip="地址栏"
+                    <Button x:Name="CopyLink" x:Uid="OpenLinkBar" ToolTipService.ToolTip="地址栏"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE71B;" Click="CopyLink_Click" />
-                    <Button Name="OpenOutside" ToolTipService.ToolTip="在浏览器打开"
+                    <Button Name="OpenOutside" x:Uid="OpenOutside" ToolTipService.ToolTip="在浏览器打开"
                     Style="{StaticResource TitleButtonStyle}"
                             Content="&#xE12B;" Click="OpenOutside_Click" />
-                    <Button Name="History" ToolTipService.ToolTip="历史记录"
+                    <Button Name="History" x:Uid="History" ToolTipService.ToolTip="历史记录"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE81C;" Click="History_Click" />
-                    <Button Name="SettingButton" ToolTipService.ToolTip="选项"
+                    <Button Name="SettingButton" x:Uid="Settings" ToolTipService.ToolTip="选项"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE713;" Click="SettingButton_Click" />
-                    <Button Name="MoreFunctions" ToolTipService.ToolTip="更多"
+                    <Button Name="MoreFunctions" x:Uid="MoreFunctions" ToolTipService.ToolTip="更多"
                     Style="{StaticResource TitleButtonStyle}" Content="&#xE712;" Visibility="Collapsed">
                         <Button.Flyout>
                             <MenuFlyout>
                                 <MenuFlyout.Items>
-                                    <MenuFlyoutItem Name="FlyoutBack" Icon="Back" Text="后退" Click="Back_Click"/>
-                                    <MenuFlyoutItem Name="FlyoutForward" Icon="Forward" Text="前进" Click="Forward_Click"/>
-                                    <MenuFlyoutItem Name="FlyoutRefresh" Icon="Refresh" Text="刷新" Click="Refresh_Click"/>
-                                    <MenuFlyoutSubItem Name="FlyoutWVTabs" Text="标签页">
+                                    <MenuFlyoutItem Name="FlyoutBack" x:Uid="FlyoutBack" Icon="Back" Text="后退" Click="Back_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutForward" x:Uid="FlyoutForward" Icon="Forward" Text="前进" Click="Forward_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutRefresh" x:Uid="FlyoutRefresh" Icon="Refresh" Text="刷新" Click="Refresh_Click"/>
+                                    <MenuFlyoutSubItem Name="FlyoutWVTabs" x:Uid="FlyoutWVTabs" Text="标签页">
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECCD;"/>
                                         </MenuFlyoutSubItem.Icon>
-                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
-                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
+                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV1" x:Uid="OnlyShowWV1" Text="仅 标签页 1" Click="OnlyShowWV_Click"/>
+                                        <MenuFlyoutItem Name="FlyoutOnlyShowWV2" x:Uid="OnlyShowWV2" Text="仅 标签页 2" Click="OnlyShowWV_Click"/>
                                         <MenuFlyoutSeparator/>
-                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab1Toggle" Text="显示 标签页 1" IsChecked="True" Click="WVTabToggle_Click"/>
-                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
+                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab1Toggle" x:Uid="WVTab1Toggle" Text="显示 标签页 1" IsChecked="True" Click="WVTabToggle_Click"/>
+                                        <ToggleMenuFlyoutItem Name="FlyoutWVTab2Toggle" x:Uid="WVTab2Toggle" Text="显示 标签页 2" Click="WVTabToggle_Click"/>
                                     </MenuFlyoutSubItem>
-                                    <MenuFlyoutItem Name="FlyoutCopyLink" Icon="Link" Text="地址栏" Click="CopyLink_Click"/>
-                                    <MenuFlyoutItem Name="FlyoutOpenOutside" Text="在浏览器打开" Click="OpenOutside_Click">
+                                    <MenuFlyoutItem Name="FlyoutCopyLink" x:Uid="FlyoutOpenLinkBar" Icon="Link" Text="地址栏" Click="CopyLink_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutOpenOutside" x:Uid="FlyoutOpenOutside" Text="在浏览器打开" Click="OpenOutside_Click">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE12B;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Name="FlyoutHistory" Text="历史记录" Click="History_Click">
+                                    <MenuFlyoutItem Name="FlyoutHistory" x:Uid="FlyoutHistory" Text="历史记录" Click="History_Click">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE81C;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Name="FlyoutSettings" Icon="Setting" Text="选项" Click="SettingButton_Click"/>
+                                    <MenuFlyoutItem Name="FlyoutSettings" x:Uid="FlyoutSettings" Icon="Setting" Text="选项" Click="SettingButton_Click"/>
                                 </MenuFlyout.Items>
                             </MenuFlyout>
                         </Button.Flyout>
@@ -801,19 +831,20 @@
                         VerticalAlignment="Center"
                         Margin="5,3,0,3"
                         Orientation="Horizontal">
-                <TextBlock Name="ErrorMessage"
-                           FontSize="16"
-                           Text=""
-                           FontWeight="Bold"
-                           VerticalAlignment="Center">
-                </TextBlock>
-
                 <Button Name="ErrorMessageButton"
                         FontFamily="Segoe MDL2 Assets"
                         Content="&#xE96D;"
                         Click="ErrorMessageButton_Click"
                         BorderBrush="{Binding Foreground, ElementName=textBlock1}"
                         />
+                <TextBlock Name="ErrorMessage"
+                           FontSize="16"
+                           Text=""
+                           Margin="5,0,0,0"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+
+                
                 <!--Background="Transparent"-->
 
             </StackPanel>
@@ -821,7 +852,7 @@
         </Grid>
         <Grid Grid.Row="1"
               Grid.Column="0"
-              MaxWidth="360">
+              MaxWidth="480">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -860,14 +891,15 @@
                     Margin="0,13,0,10"
                     Background="Transparent"
                     Click="TabManageReturn_Click"/>
-                <TextBlock FontSize="36"
-                       Margin="63,10,10,10"
-                       VerticalAlignment="Stretch"
-                       HorizontalAlignment="Left">
-                搜索项
+                <TextBlock x:Uid="TabManageTitle"
+                    FontSize="36"
+                    Margin="58,10,10,10"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Left">
                 </TextBlock>
 
                 <Button Name="TabAdd"
+                        x:Uid="AddTab"
                         Grid.Row="2"
                         Content="添加搜索项"
                         Click="TabAdd_Click"
@@ -878,19 +910,23 @@
                 <StackPanel Grid.Row="3"
                         Margin="10,0,0,0">
                     <TextBlock Margin="0,20,0,10"
-                           Grid.Row="2"
-                           FontSize="22">
+                               x:Uid="CurrentTab"
+                               Grid.Row="2"
+                               FontSize="22">
                     当前搜索项
                     </TextBlock>
 
-                    <TextBlock Margin="0,0,0,5">
+                    <TextBlock
+                               x:Uid="EditTab">
                     修改当前搜索项的信息。
                     </TextBlock>
                     <TextBlock Margin="0,0,0,10"
+                               x:Uid="TabNotice"
                                FontWeight="Bold">
                     网址应以https:或http:开头。
                     </TextBlock>
                     <TextBlock VerticalAlignment="Center"
+                               x:Uid="TabName"
                                Margin="0,0,10,0">
                         名称
                     </TextBlock>
@@ -898,12 +934,14 @@
                              Margin="0,0,10,10"
                              HorizontalAlignment="Stretch"/>
                     <TextBlock VerticalAlignment="Center"
+                               x:Uid="TabHome"
                                Margin="0,0,10,0">
                         网址（无搜索文本时）
                     </TextBlock>
                     <TextBox Name="TabHome"
                              Margin="0,0,10,10"/>
                     <TextBlock VerticalAlignment="Center"
+                               x:Uid="TabUrl1"
                                Margin="0,0,10,0">
                         网址（搜索文本之前）
                     </TextBlock>
@@ -912,6 +950,7 @@
                              TextWrapping="Wrap"
                              MaxHeight="96"/>
                     <TextBlock VerticalAlignment="Center"
+                               x:Uid="TabUrl2"
                                Margin="0,0,10,0">
                         网址（搜索文本之后）
                     </TextBlock>
@@ -921,15 +960,20 @@
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center">
                         <Button Name="TabSave"
-                            Margin="0,2,2,2"
-                            Content="保存" Click="TabSave_Click"/>
+                                x:Uid="SaveButton"
+                                Margin="0,2,2,2"
+                                Content="保存"
+                                Click="TabSave_Click"/>
                         <Button Name="TabMoveUp"
+                                x:Uid="MoveUpButton"
                             Margin="2"
                             Content="上移" Click="TabMoveUp_Click"/>
                         <Button Name="TabMoveDown"
+                                x:Uid="MoveDownButton"
                             Margin="2"
                             Content="下移" Click="TabMoveDown_Click"/>
                         <Button Name="TabDelete"
+                                x:Uid="DeleteButton"
                                 Margin="2,2,10,2"
                                 Content="删除"
                                 Click="TabDelete_Click"/>
