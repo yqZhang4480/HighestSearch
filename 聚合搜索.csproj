@@ -10,7 +10,7 @@
     <RootNamespace>聚合搜索</RootNamespace>
     <AssemblyName>聚合搜索</AssemblyName>
     <UseDotNetNativeSharedAssemblyFrameworkPackage>false</UseDotNetNativeSharedAssemblyFrameworkPackage>
-    <DefaultLanguage>en</DefaultLanguage>
+    <DefaultLanguage>zh-Hans</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -147,6 +147,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\comment.png" />
+    <Content Include="Assets\dark.css" />
+    <Content Include="Assets\dark.css.js" />
     <Content Include="Assets\icon\LargeTile.scale-100.png" />
     <Content Include="Assets\icon\LargeTile.scale-125.png" />
     <Content Include="Assets\icon\LargeTile.scale-150.png" />

@@ -61,7 +61,6 @@ namespace 聚合搜索
             }
         }
     }
-
     #endregion
 
     public sealed partial class MainPage : Page
@@ -79,7 +78,9 @@ namespace 聚合搜索
 
         private StorageFile searchHistoryFile;
         private StorageFile viewHistoryFile;
-        private StorageFile TabFile;
+        private StorageFile tabFile;
+        private StorageFile darkModeJS;
+        private StorageFile darkCSS;
         #endregion
 
         #region init
@@ -124,9 +125,16 @@ namespace 聚合搜索
             viewHistoryFile =
                 await storageFolder.CreateFileAsync("ViewHistory.dat",
                     CreationCollisionOption.OpenIfExists);
-            TabFile =
+            tabFile =
                 await storageFolder.CreateFileAsync("Tabs.dat",
                     CreationCollisionOption.OpenIfExists);
+            darkModeJS =
+                await StorageFile.GetFileFromApplicationUriAsync(
+                    new Uri("ms-appx:///Assets/dark.css.js"));
+            darkCSS =
+                await StorageFile.GetFileFromApplicationUriAsync(
+                    new Uri("ms-appx:///Assets/dark.css"));
+
             #endregion
 
             #region Search History
@@ -166,11 +174,11 @@ namespace 聚合搜索
             #endregion
 
             #region tabs
-            string tabsText = await FileIO.ReadTextAsync(TabFile);
+            string tabsText = await FileIO.ReadTextAsync(tabFile);
             if (tabsText == "")
             {
-                TabFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/tabs.zh-cn.txt"));
-                tabsText = await FileIO.ReadTextAsync(TabFile);
+                tabFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/tabs.zh-cn.txt"));
+                tabsText = await FileIO.ReadTextAsync(tabFile);
             }
             string[] tabsTextArray = tabsText.Split("\n");
 
@@ -275,7 +283,7 @@ namespace 聚合搜索
             }
             try
             {
-                await Windows.Storage.FileIO.WriteTextAsync(TabFile, tabsToString);
+                await Windows.Storage.FileIO.WriteTextAsync(tabFile, tabsToString);
             }
             catch (Exception)
             {
@@ -349,7 +357,7 @@ namespace 聚合搜索
         }
         private void OpenOutside_Click(object sender, RoutedEventArgs e)
         {
-            Windows.System.Launcher.LaunchUriAsync(WV.Source);
+            Launcher.LaunchUriAsync(WV.Source);
         }
         private void CopyLink_Click(object sender, RoutedEventArgs e)
         {
@@ -369,24 +377,6 @@ namespace 聚合搜索
             TabBar.Visibility = Visibility.Visible;
             TitleGrid.Visibility = Visibility.Visible;
             ExitFullScreenButton.Visibility = Visibility.Collapsed;
-        }
-        private void Comment_Click(object sender, RoutedEventArgs e)
-        {
-            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
-        }
-
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            Launcher.LaunchUriAsync(new Uri("https://github.com/CS4480/Union-Find-Sets"));
-        }
-
-        private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
-        {
-            // 防止建议框闪烁
-            if (((ToggleSwitch)sender).IsOn == false)
-            {
-                SearchBar.ItemsSource = null;
-            }
         }
         #endregion
 
@@ -594,11 +584,16 @@ namespace 聚合搜索
                 Refresh_Click(null, null);
             }
         }
-        private void WV_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
+        private async void WV_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
+            if (DarkModeToggleSwitch.IsOn && darkCSS != null && darkModeJS != null)
+            {
+                var CSSString = (await FileIO.ReadTextAsync(darkCSS)).Replace("\n", "");
+                var JSString = (await FileIO.ReadTextAsync(darkModeJS)).Replace("__DARK_CSS__", CSSString);
+                await WV.InvokeScriptAsync("eval", new string[] { JSString });
+            }
             CheckNavigationButtonState();
-        }
-        
+        }      
         private void WV_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
         {
             PutErrorMessage(AppResources.GetString("Message_Unsupport_Content"));
@@ -614,6 +609,24 @@ namespace 聚合搜索
         #endregion
 
         #region Setting
+        private void ChangeTheme(FrameworkElement element, ElementTheme theme)
+        {
+            element.RequestedTheme = theme;
+            if (element.GetType() == typeof(Grid))
+            {
+                foreach (var e in ((Grid)element).Children)
+                {
+                    ChangeTheme((FrameworkElement)e, theme);
+                }
+            }
+            if (element.GetType() == typeof(StackPanel))
+            {
+                foreach (var e in ((StackPanel)element).Children)
+                {
+                    ChangeTheme((FrameworkElement)e, theme);
+                }
+            }
+        }
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
             SettingGrid.Visibility = Visibility.Visible;
@@ -621,6 +634,39 @@ namespace 聚合搜索
         private void SettingReturn_Click(object sender, RoutedEventArgs e)
         {
             SettingGrid.Visibility = Visibility.Collapsed;
+        }
+        private void Comment_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?productid=9P08CHLDB0Q1"));
+        }
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            Launcher.LaunchUriAsync(new Uri("https://github.com/CS4480/Union-Find-Sets"));
+        }
+        private async void DarkModeToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (DarkModeToggleSwitch.IsOn && darkCSS != null && darkModeJS != null)
+            {
+                var CSSString = (await FileIO.ReadTextAsync(darkCSS)).Replace("\n", "");
+                var JSString = (await FileIO.ReadTextAsync(darkModeJS)).Replace("__DARK_CSS__", CSSString);
+                await WV.InvokeScriptAsync("eval", new string[] { JSString });
+                ChangeTheme(RootGrid, ElementTheme.Dark);
+                ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Colors.White;
+
+            }
+            else
+            {
+                ChangeTheme(RootGrid, ElementTheme.Light);
+                ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Colors.Black;
+            }
+        }
+        private void EnableSuggest_Toggled(object sender, RoutedEventArgs e)
+        {
+            // 防止建议框闪烁
+            if (((ToggleSwitch)sender).IsOn == false)
+            {
+                SearchBar.ItemsSource = null;
+            }
         }
         #endregion
 
@@ -1084,6 +1130,43 @@ namespace 聚合搜索
             }
         }
 
-       
+        #region WV_DEBUG
+        private async void WV1_ActualThemeChanged(FrameworkElement sender, object args)
+        {
+            Debug.WriteLine($"ActualThemeChanged {WV1.Source}");
+        }
+        private void WV1_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            Debug.WriteLine($"ContextRequested {WV1.Source}");
+        }
+        private void WV1_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            Debug.WriteLine($"DataContextChanged {WV1.Source}");
+        }
+        private void WV1_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
+        {
+            Debug.WriteLine($"DOMContentLoaded {WV1.Source}");
+        }
+        private void WV1_FrameContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
+        {
+            Debug.WriteLine($"FrameContentLoading {WV1.Source}");
+        }
+        private void WV1_FrameNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            Debug.WriteLine($"FrameNavigationCompleted {WV1.Source}");
+        }
+        private void WV1_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            Debug.WriteLine($"LoadCompleted {WV1.Source}");
+        }
+        private void WV1_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine($"Loaded {WV1.Source}");
+        }
+        private void WV1_Loading(FrameworkElement sender, object args)
+        {
+            Debug.WriteLine($"Loading {WV1.Source}");
+        } 
+        #endregion
     }
 }

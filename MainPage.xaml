@@ -242,6 +242,8 @@
             <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="TextBoxStyle" Value="{StaticResource AutoSuggestBoxTextBoxStyle}"/>
             <Setter Property="UseSystemFocusVisuals" Value="{ThemeResource IsApplicationFocusVisualKindReveal}"/>
+            <Setter Property="Background" Value="{ThemeResource FlyoutBackgroundThemeBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource ButtonRevealBorderBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="AutoSuggestBox">
@@ -319,7 +321,7 @@
         </ControlTemplate>
     </Page.Resources>
 
-    <Grid>
+    <Grid Name="RootGrid">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
                 <VisualState x:Name="Large">
@@ -382,7 +384,6 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
             </Grid.ColumnDefinitions>
-            <ScrollBar />
             <Button Name="SettingReturn"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="36"
@@ -396,39 +397,73 @@
                        VerticalAlignment="Stretch">
                 选项
             </TextBlock>
-            <StackPanel Grid.Row="1"
+            <ScrollViewer Grid.Row="1">
+                <StackPanel 
                         Orientation="Vertical"
                         Margin="10,0,0,0">
 
-                <Button Name="TabManage"
+                    <Button Name="TabManage"
                         x:Uid="GotoTabManage"
                         HorizontalAlignment="Stretch"
                         Margin="0,0,10,10"
                         Click="TabManage_Click">
-                    管理搜索项
-                </Button>
+                        管理搜索项
+                    </Button>
 
-                <TextBlock Margin="0,20,0,10" x:Uid="UA"
+                    <TextBlock Margin="0,20,0,10" x:Uid="UA"
                            FontSize="22">
                     浏览器标识（UA）
-                </TextBlock>
-                <TextBlock x:Uid="UAwords1">
+                    </TextBlock>
+                    <TextBlock x:Uid="UAwords1">
                     选择应用使用的浏览器标识。
-                </TextBlock>
-                <TextBlock Margin="0,0,0,0" x:Uid="UAwords2"
+                    </TextBlock>
+                    <TextBlock Margin="0,0,0,0" x:Uid="UAwords2"
                            FontWeight="Bold">
                      此项不适用于内部跳转链接，<LineBreak/>不一致时请尝试刷新页面。
-                </TextBlock>
-                <ComboBox Name="UACB"
+                    </TextBlock>
+                    <ComboBox Name="UACB"
                           HorizontalAlignment="Stretch"
                           Margin="0,0,10,0">
-                </ComboBox>
+                    </ComboBox>
 
-                <TextBlock Margin="0,20,0,10" x:Uid="Suggest"
+                    <TextBlock Margin="0,20,0,10" x:Uid="Dark"
                            FontSize="22">
+                    黑暗模式
+                    </TextBlock>
+                    <ToggleSwitch
+                        Name="DarkModeToggleSwitch"
+                        x:Uid="DarkToggleSwitchContent"
+                        Margin="0,0,10,0"
+                        IsOn="False"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Toggled="DarkModeToggleSwitch_Toggled"
+                        >
+                        <TextBlock>
+                            重新设定应用与网页主题颜色。<LineBreak/>部分内容可能无法正常显示。
+                        </TextBlock>
+                    </ToggleSwitch>
+                    <TextBlock x:Uid="Shade">
+                            使用半透明的暗色遮罩。(推荐)
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Maximum="1"
+                                Name="ShadeTransparency"
+                                SmallChange="0.1"
+                                Value="1"
+                                Width="100"
+                                StepFrequency="0.1" Minimum="0.1"/>
+                        <TextBlock Text="{Binding Value, ElementName=ShadeTransparency}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0" Width="29"/>
+                    </StackPanel>
+                    <TextBlock Margin="0,20,0,10"
+                               x:Uid="Suggest"
+                               FontSize="22">
                     输入建议
-                </TextBlock>
-                <ToggleSwitch Name="EnableSuggest"
+                    </TextBlock>
+                    <ToggleSwitch Name="EnableSuggest"
                               x:Uid="SuggestToggleSwitchContent"
                               Margin="0,0,10,0"
                               OnContent="开"
@@ -437,27 +472,28 @@
                               VerticalAlignment="Top"
                               Toggled="EnableSuggest_Toggled"
                               >
-                    提供基于历史记录的建议。
-                </ToggleSwitch>
-                <Button x:Name="Comment"
+                        提供基于历史记录的建议。
+                    </ToggleSwitch>
+                    <Button x:Name="Comment"
                         HorizontalAlignment="Stretch"
                         Margin="0,15,10,0" CornerRadius="15,15,15,15"
                         Background="#33FFFFFF" BorderBrush="#66000000" Click="Comment_Click"
                         >
-                    <StackPanel>
-                        <Image Source="/Assets/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
-                        <TextBlock x:Uid="GotoStore" Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
-                    </StackPanel>
-                </Button>
-                <Button Name="About"
+                        <StackPanel>
+                            <Image Source="/Assets/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
+                            <TextBlock x:Uid="GotoStore" Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="About"
                         HorizontalAlignment="Stretch"
                         Margin="0,15,10,0" Click="About_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" Margin="0,3,7,0" VerticalAlignment="Center" />
-                        <TextBlock x:Uid="About" Text="关于应用" HorizontalAlignment="Center" Margin="0" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" Margin="0,3,7,0" VerticalAlignment="Center" />
+                            <TextBlock x:Uid="About" Text="关于应用" HorizontalAlignment="Center" Margin="0" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <Grid Name="HistoryGrid"
@@ -627,6 +663,16 @@
                      UnviewableContentIdentified="WV_UnviewableContentIdentified"
                      UnsupportedUriSchemeIdentified="WV_UnsupportedUriSchemeIdentified"
                      UnsafeContentWarningDisplaying="WV_UnsafeContentWarningDisplaying"
+                     Opacity="{Binding Value, ElementName=ShadeTransparency}"
+                     ActualThemeChanged="WV1_ActualThemeChanged"
+                     ContextRequested="WV1_ContextRequested"
+                     DataContextChanged="WV1_DataContextChanged"
+                     DOMContentLoaded="WV1_DOMContentLoaded"
+                     FrameContentLoading="WV1_FrameContentLoading"
+                     FrameNavigationCompleted="WV1_FrameNavigationCompleted"
+                     LoadCompleted="WV1_LoadCompleted"
+                     Loaded="WV1_Loaded"
+                     Loading="WV1_Loading"
                      />
             <ProgressBar Name="WV1PB"
                          Grid.Row="0"
@@ -651,6 +697,7 @@
                      ContentLoading="WV_ContentLoading"
                      UnsupportedUriSchemeIdentified="WV_UnsupportedUriSchemeIdentified"
                      UnsafeContentWarningDisplaying="WV_UnsafeContentWarningDisplaying"
+                     Opacity="{Binding Value, ElementName=ShadeTransparency}"
                      />
             <ProgressBar Name="WV2PB"
                          Grid.Row="0"
@@ -667,8 +714,7 @@
               Grid.Column="0"
               Grid.ColumnSpan="5"
               DragOver="TitleGrid_DragOver"
-              Drop="TitleGrid_Drop"
-              Background="#FFF0F0F0">
+              Drop="TitleGrid_Drop" Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <!--AllowDrop="True"-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -709,7 +755,8 @@
                                 TextChanged="SearchBar_TextChanged"
                                 QuerySubmitted="SearchBar_QuerySubmitted"
                                 SuggestionChosen="SearchBar_SuggestionChosen"
-                                Background="White" MaxHeight="64"/>
+                                MaxHeight="64"
+                                />
 
                 <Button x:Name="SearchButton"
                         Grid.Column="1"
@@ -810,7 +857,9 @@
                                 Grid.Column="0"
                                 Margin="0,0,5,0"
                                 HorizontalAlignment="Stretch"
-                                QuerySubmitted="LinkBar_QuerySubmitted" Background="White"/>
+                                QuerySubmitted="LinkBar_QuerySubmitted"
+                                />
+
                 <Button Name="GotoButton"
                         Style="{StaticResource TitleButtonStyle}"
                         Grid.Column="1"
@@ -844,7 +893,7 @@
                            FontWeight="Bold"
                            VerticalAlignment="Center"/>
 
-                
+
                 <!--Background="Transparent"-->
 
             </StackPanel>
@@ -879,8 +928,6 @@
                   MinWidth="228">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -898,87 +945,89 @@
                     HorizontalAlignment="Left">
                 </TextBlock>
 
-                <Button Name="TabAdd"
+
+                <ScrollViewer Grid.Row="3">
+                    <StackPanel Margin="10,0,0,0">
+
+                        <Button Name="TabAdd"
                         x:Uid="AddTab"
-                        Grid.Row="2"
                         Content="添加搜索项"
                         Click="TabAdd_Click"
                         Margin="10,0,10,10"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"/>
 
-                <StackPanel Grid.Row="3"
-                        Margin="10,0,0,0">
-                    <TextBlock Margin="0,20,0,10"
+                        <TextBlock Margin="0,20,0,10"
                                x:Uid="CurrentTab"
-                               Grid.Row="2"
+                               Grid.Row="1"
                                FontSize="22">
                     当前搜索项
-                    </TextBlock>
+                        </TextBlock>
 
-                    <TextBlock
+                        <TextBlock
                                x:Uid="EditTab">
                     修改当前搜索项的信息。
-                    </TextBlock>
-                    <TextBlock Margin="0,0,0,10"
+                        </TextBlock>
+                        <TextBlock Margin="0,0,0,10"
                                x:Uid="TabNotice"
                                FontWeight="Bold">
                     网址应以https:或http:开头。
-                    </TextBlock>
-                    <TextBlock VerticalAlignment="Center"
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center"
                                x:Uid="TabName"
                                Margin="0,0,10,0">
                         名称
-                    </TextBlock>
-                    <TextBox Name="TabName"
+                        </TextBlock>
+                        <TextBox Name="TabName"
                              Margin="0,0,10,10"
                              HorizontalAlignment="Stretch"/>
-                    <TextBlock VerticalAlignment="Center"
+                        <TextBlock VerticalAlignment="Center"
                                x:Uid="TabHome"
                                Margin="0,0,10,0">
                         网址（无搜索文本时）
-                    </TextBlock>
-                    <TextBox Name="TabHome"
+                        </TextBlock>
+                        <TextBox Name="TabHome"
                              Margin="0,0,10,10"/>
-                    <TextBlock VerticalAlignment="Center"
+                        <TextBlock VerticalAlignment="Center"
                                x:Uid="TabUrl1"
                                Margin="0,0,10,0">
                         网址（搜索文本之前）
-                    </TextBlock>
-                    <TextBox Name="TabUrl1"
+                        </TextBlock>
+                        <TextBox Name="TabUrl1"
                              Margin="0,0,10,10"
                              TextWrapping="Wrap"
                              MaxHeight="96"/>
-                    <TextBlock VerticalAlignment="Center"
+                        <TextBlock VerticalAlignment="Center"
                                x:Uid="TabUrl2"
                                Margin="0,0,10,0">
                         网址（搜索文本之后）
-                    </TextBlock>
-                    <TextBox Name="TabUrl2"
+                        </TextBlock>
+                        <TextBox Name="TabUrl2"
                              Margin="0,0,10,2"/>
 
-                    <StackPanel Orientation="Horizontal"
+                        <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center">
-                        <Button Name="TabSave"
+                            <Button Name="TabSave"
                                 x:Uid="SaveButton"
                                 Margin="0,2,2,2"
                                 Content="保存"
                                 Click="TabSave_Click"/>
-                        <Button Name="TabMoveUp"
+                            <Button Name="TabMoveUp"
                                 x:Uid="MoveUpButton"
                             Margin="2"
                             Content="上移" Click="TabMoveUp_Click"/>
-                        <Button Name="TabMoveDown"
+                            <Button Name="TabMoveDown"
                                 x:Uid="MoveDownButton"
                             Margin="2"
                             Content="下移" Click="TabMoveDown_Click"/>
-                        <Button Name="TabDelete"
+                            <Button Name="TabDelete"
                                 x:Uid="DeleteButton"
                                 Margin="2,2,10,2"
                                 Content="删除"
                                 Click="TabDelete_Click"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </Grid>
         </Grid>
         <Button Content="&#xE1D8;"

@@ -1,0 +1,52 @@
+* {
+    background-image: none !important;
+    background: none !important;
+    background: #333333 !important;
+    color: #888888 !important;
+    border-color: #555555 !important;
+    scrollbar-arrow-color: #CCCCCC !important;
+    scrollbar-base-color: #2266AA !important;
+    scrollbar-shadow-color: #2266AA !important;
+    scrollbar-face-color: #333333 !important;
+    scrollbar-highlight-color: #2266AA !important;
+    scrollbar-dark-shadow-color: #2266AA !important;
+    scrollbar-3d-light-color: #2266AA !important;
+    scrollbar-track-color: #333333 !important;
+}
+
+a, a * {
+    color: #88AADD !important;
+    text-decoration: none !important;
+}
+
+    a:visited, a:visited *, a:active, a:active * {
+        color: #5588AA !important;
+    }
+
+    a:hover, a:hover * {
+        color: #AADD88 !important;
+        background: #666666 !important;
+    }
+
+input, select, option, button, textarea {
+    color: #AAAAAA !important;
+    background: #555555 !important;
+    border: #666666 !important;
+    border-color: #666666 #888888 #888888 #666666 !important;
+}
+
+    input:focus, select:focus, option:focus, button:focus, textarea:focus, input:hover, select:hover, option:hover, button:hover, textarea:hover {
+        color: #BBBBBB !important;
+        background: #5A5A5A !important;
+        border-color: #777777 #999999 #999999 #777777 !important;
+    }
+
+    input[type=button], input[type=submit], input[type=reset], input[type=image] {
+        border-color: #888888 #666666 #666666 #888888 !important;
+    }
+
+        input[type=button]:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=image]:focus, input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=image]:hover {
+            color: #BBBBBB !important;
+            background: #666666 !important;
+            border-color: #AAAAAA #888888 #888888 #AAAAAA !important;
+        }
