@@ -71,7 +71,7 @@ namespace 聚合搜索
         private UA[] uas;
         //private enum Layout { Horizontal, Tile };
         //private Layout layout = Layout.Horizontal;
-        private readonly int uaNum = 4;
+        private readonly int uaNum = 5;
         private Stack<ViewHistory> viewHistory = new Stack<ViewHistory>();
         private Stack<string> searchHistory = new Stack<string>();
         private WebView WV;
@@ -177,8 +177,10 @@ namespace 聚合搜索
             string tabsText = await FileIO.ReadTextAsync(tabFile);
             if (tabsText == "")
             {
-                tabFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/tabs.zh-cn.txt"));
+                var temp = tabFile;
+                tabFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/default/tabs.txt"));
                 tabsText = await FileIO.ReadTextAsync(tabFile);
+                tabFile = temp;
             }
             string[] tabsTextArray = tabsText.Split("\n");
 
@@ -203,17 +205,20 @@ namespace 聚合搜索
             #region UAs
             uas = new UA[uaNum];
 
-            uas[0].name = "Chrome";
-            uas[0].ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/83.0.4103.116";
+            uas[0].name = "None";
+            uas[0].ua = "";
 
-            uas[1].name = "IE 10";
-            uas[1].ua = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
+            uas[1].name = "Chrome";
+            uas[1].ua = "Chrome/83.0.4103.116 (Windows NT 10.0; Win64; x64)";
 
-            uas[2].name = "Android";
-            uas[2].ua = "Mozilla/5.0 (Linux; Android 7.0; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 T7/10.3 SearchCraft/2.6.2 (Baidu; P1 7.0)";
+            uas[2].name = "IE 10";
+            uas[2].ua = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
 
-            uas[3].name = "WAP";
-            uas[3].ua = "Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba";
+            uas[3].name = "Android";
+            uas[3].ua = "Mozilla/5.0 (Linux; Android 7.0; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 T7/10.3 SearchCraft/2.6.2 (Baidu; P1 7.0)";
+
+            uas[4].name = "WAP";
+            uas[4].ua = "Mozilla/5.0 (Symbian/3; Series60/5.2 NokiaN8-00/012.002; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.0 Mobile Safari/533.4 3gpp-gba";
 
             for (int i = 0; i < uaNum; i++)
             {
@@ -283,7 +288,7 @@ namespace 聚合搜索
             }
             try
             {
-                await Windows.Storage.FileIO.WriteTextAsync(tabFile, tabsToString);
+                await FileIO.WriteTextAsync(tabFile, tabsToString);
             }
             catch (Exception)
             {
@@ -513,7 +518,7 @@ namespace 聚合搜索
             var tb = (TextBlock)TabBar.SelectedItem;
             Windows.Web.Http.HttpRequestMessage req = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
             req.Headers.Referer = uri;
-            if (UACB.SelectedIndex >= 0)
+            if (UACB.SelectedIndex > 0)
             {
                 req.Headers.Add("User-Agent", uas[UACB.SelectedIndex].ua);
             }

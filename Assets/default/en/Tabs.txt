@@ -1,0 +1,10 @@
+Google	https://www.google.com/	https://www.google.com/search?q=	
+Bing	https://www.bing.com/	https://www.bing.com/search?q=	
+Yahoo!	https://search.yahoo.com/	https://search.yahoo.com/search?p=	
+Duck Duck Go	https://duckduckgo.com/	https://duckduckgo.com/?q=awd	
+AOL	https://www.aol.com/	https://search.aol.com/aol/search?q=	
+ask.com	https://www.ask.com/	https://www.ask.com/web?q=	
+dictionary.com	http://www.dictionary.com/	http://www.dictionary.com/browse/	
+Wikipedia	https://en.wikipedia.org	https://en.wikipedia.org/wiki/Special:Search?search=	
+YouTube	https://www.youtube.com/	https://www.youtube.com/results?search_query=	
+Right-click or long press here for the search sites management	about:blank	about:blank	

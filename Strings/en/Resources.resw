@@ -132,6 +132,13 @@
   <data name="CurrentTab.Text" xml:space="preserve">
     <value>Current search site</value>
   </data>
+  <data name="Dark.Text" xml:space="preserve">
+    <value>Dark mode</value>
+  </data>
+  <data name="DarkToggleSwitchContent.Header" xml:space="preserve">
+    <value>Reset application and web page theme colors.
+Some content may not be displayed properly.</value>
+  </data>
   <data name="DeleteButton.Content" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -281,6 +288,9 @@
   </data>
   <data name="SettingTitle.Text" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="Shade.Text" xml:space="preserve">
+    <value>Use a translucent dark mask. (Recommended)</value>
   </data>
   <data name="Suggest.Text" xml:space="preserve">
     <value>Input suggestions</value>

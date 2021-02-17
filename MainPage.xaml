@@ -11,7 +11,7 @@
     RequestedTheme="Light"
     >
 
-    <!--20210123: 多语言、搜索项分组、搜索项导出/导入、选项持久化、浏览器消息、拖动链接、地址栏提示。-->
+    <!--20210123: 搜索项分组、搜索项导出/导入、选项持久化、浏览器消息、拖动链接、地址栏提示。-->
 
     <Page.Resources>
         <Style x:Name="TitleButtonStyle" TargetType="Button">
@@ -477,10 +477,10 @@
                     <Button x:Name="Comment"
                         HorizontalAlignment="Stretch"
                         Margin="0,15,10,0" CornerRadius="15,15,15,15"
-                        Background="#33FFFFFF" BorderBrush="#66000000" Click="Comment_Click"
+                        Background="#88FFFFFF" BorderBrush="#66000000" Click="Comment_Click"
                         >
                         <StackPanel>
-                            <Image Source="/Assets/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
+                            <Image Source="/Assets/UI/comment.png" Height="148" Width="146" Margin="0,4,0,0" />
                             <TextBlock x:Uid="GotoStore" Text="去应用商店评价" HorizontalAlignment="Center" Margin="0,8,0,2" />
                         </StackPanel>
                     </Button>
@@ -652,9 +652,9 @@
             <WebView x:Name="WV1"
                      Grid.Row="1"
                      Grid.Column="0"
+                     Source="about:blank"
                      NavigationCompleted="WV_NavigationCompleted"
                      NewWindowRequested="WV_NewWindowRequested"
-                     Source="about:blank"
                      GotFocus="WV_GotFocus"
                      AllowDrop="True"
                      Drop="WV_Drop"
@@ -906,14 +906,14 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+
             <ListBox x:Name="TabBar"
-                     IsTabStop="True"
-                     Tapped="TabBar_Tapped"
-                     Grid.Column="0"
-                     SelectionChanged="TabBar_SelectionChanged"
-                     MaxWidth="132"
-                     RightTapped="TabBar_RightTapped"
-                     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                         IsTabStop="True"
+                         Tapped="TabBar_Tapped"
+                         SelectionChanged="TabBar_SelectionChanged"
+                         MaxWidth="132"
+                         RightTapped="TabBar_RightTapped"
+                         Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel Orientation="Vertical"/>

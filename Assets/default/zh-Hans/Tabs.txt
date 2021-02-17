@@ -4,4 +4,6 @@ Bing 国内版	https://cn.bing.com/	https://cn.bing.com/search?q=
 Google	https://www.google.com/	https://www.google.com/search?q=	
 搜狗·微信	https://weixin.sogou.com/	https://weixin.sogou.com/weixin?type=2&query=	
 哔哩哔哩	https://www.bilibili.com/	https://search.bilibili.com/all?keyword=	
-右键点击此处可管理搜索项	about:blank	因版权原因，请自行添加其他网站，感谢您的理解。	
+知乎	https://www.zhihu.com/	https://www.zhihu.com/search?type=content&q=	
+Wikipedia	https://en.wikipedia.org	https://en.wikipedia.org/wiki/Special:Search?search=	
+右键点击此处可管理搜索项	about:blank	about:blank	

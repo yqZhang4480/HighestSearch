@@ -146,7 +146,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\comment.png" />
+    <Content Include="Assets\UI\comment.png" />
     <Content Include="Assets\dark.css" />
     <Content Include="Assets\dark.css.js" />
     <Content Include="Assets\icon\LargeTile.scale-100.png" />
@@ -199,7 +199,8 @@
     <Content Include="Assets\icon\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\icon\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\icon\Wide310x150Logo.scale-400.png" />
-    <Content Include="Assets\Tabs.zh-cn.txt" />
+    <Content Include="Assets\default\en\Tabs.txt" />
+    <Content Include="Assets\default\zh-Hans\Tabs.txt" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
@@ -223,9 +224,7 @@
     <PRIResource Include="Strings\zh-Hans\Resources.resw" />
     <None Include="聚合搜索_TemporaryKey.pfx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Strings\zh-Hant\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
