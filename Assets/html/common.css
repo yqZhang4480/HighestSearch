@@ -1,0 +1,31 @@
+.header {
+  background-image: url(images/bridge.jfif);
+}
+.header h1 {
+  color: white;
+   text-shadow: 5px 5px 5px #000000;
+  padding: 100px 250px 25px;
+  font-size: 28pt;
+  font-weight: bold;
+}
+.page_content {
+  margin: 25px 250px;
+  width: auto;
+  height: auto;
+  }
+.page_content h2 {
+  margin-top: 25px;
+  font-size: 18pt;
+  font-weight: bold;
+}
+.img {
+  margin: 25px 0;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+}
+#ggbridge {
+  width: 100%;
+  height: auto;
+}

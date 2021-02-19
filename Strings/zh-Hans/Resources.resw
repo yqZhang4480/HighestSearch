@@ -256,10 +256,10 @@
   <data name="NewItem" xml:space="preserve">
     <value>新建搜索项</value>
   </data>
-  <data name="OnlyShowWV1.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="OnlyShowWV1.Text" xml:space="preserve">
     <value>仅 标签页 1</value>
   </data>
-  <data name="OnlyShowWV2.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="OnlyShowWV2.Text" xml:space="preserve">
     <value>仅 标签页 2</value>
   </data>
   <data name="OpenLinkBar.ToolTipService.ToolTip" xml:space="preserve">
@@ -335,10 +335,10 @@
   <data name="ViewHistoryRB.Content" xml:space="preserve">
     <value>浏览记录</value>
   </data>
-  <data name="WVTab1Toggle.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="WVTab1Toggle.Text" xml:space="preserve">
     <value>显示 标签页 1</value>
   </data>
-  <data name="WVTab2Toggle.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="WVTab2Toggle.Text" xml:space="preserve">
     <value>显示 标签页 2</value>
   </data>
   <data name="WVTabs.ToolTipService.ToolTip" xml:space="preserve">
