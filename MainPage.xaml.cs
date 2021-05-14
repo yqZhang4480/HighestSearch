@@ -67,6 +67,7 @@ namespace 聚合搜索
     {
 
         #region vars
+
         private Stack<Tab> tabs = new Stack<Tab>();
         private UA[] uas;
         //private enum Layout { Horizontal, Tile };
@@ -411,6 +412,7 @@ namespace 聚合搜索
             catch (Exception)
             {
                 PutErrorMessage(AppResources.GetString("Message_CannotResolve_LinkBar"));
+                loadPR.ShowError = true;
             }
         }
         private void LinkBar_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -441,6 +443,7 @@ namespace 聚合搜索
             catch (UriFormatException)
             {
                 PutErrorMessage(AppResources.GetString("Message_CannotResolve_Item"));
+                loadPR.ShowError = true;
                 return;
             }
 
@@ -507,7 +510,8 @@ namespace 聚合搜索
         #region WebView
         private void WV_GotoPage(Uri uri)
         {
-            loadPR.IsActive = true;
+            loadPR.ShowError = false;
+            loadPR.ShowPaused = false;
             OpenOutside.IsEnabled = true;
             FlyoutOpenOutside.IsEnabled = true;
             CopyLink.IsEnabled = true;
@@ -529,6 +533,7 @@ namespace 聚合搜索
             catch (Exception)
             {
                 PutErrorMessage(AppResources.GetString("Message_CannotResolve_Unknown"));
+                loadPR.ShowError = true;
             }
             CheckNavigationButtonState();
         }
@@ -543,13 +548,14 @@ namespace 聚合搜索
             if (!args.IsSuccess)
             {
                 PutErrorMessage(AppResources.GetString("Message_AccessFailed") + args.WebErrorStatus.ToString());
+                loadPR.ShowError = true;
             }
             if (WV.Source.Equals(new Uri("about:blank")))
             {
                 return;
             }
             CheckNavigationButtonState();
-            loadPR.IsActive = false;
+            loadPR.ShowPaused = true;
             var tb = (TextBlock)TabBar.SelectedItem;
 
             var h = new ViewHistory
@@ -1104,6 +1110,7 @@ namespace 聚合搜索
 
         #endregion
 
+        #region Drops
         private async void WV_Drop(object sender, DragEventArgs e)
         {
             if (e.DataView.Contains(StandardDataFormats.WebLink))
@@ -1133,7 +1140,8 @@ namespace 聚合搜索
             {
                 WV_GotoPage(await e.DataView.GetWebLinkAsync());
             }
-        }
+        } 
+        #endregion
 
         #region WV_DEBUG
         private async void WV1_ActualThemeChanged(FrameworkElement sender, object args)

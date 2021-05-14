@@ -1,11 +1,11 @@
-﻿<Page
+﻿<Page xmlns:my="using:Microsoft.UI.Xaml.Controls" 
     x:Class="聚合搜索.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:聚合搜索"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="mc"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     KeyDown="Page_KeyDown"
     RequestedTheme="Light"
@@ -409,6 +409,10 @@
                         Click="TabManage_Click">
                         管理搜索项
                     </Button>
+                    <TextBlock Margin="0,20,0,10"
+                           FontSize="22">
+                    用户账户
+                    </TextBlock>
 
                     <TextBlock Margin="0,20,0,10" x:Uid="UA"
                            FontSize="22">
@@ -728,7 +732,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ProgressRing Grid.Column="1" x:Name="loadPR" Margin="6,5,150,5" HorizontalAlignment="Right"/>
+            <my:ProgressBar Grid.ColumnSpan="2"
+                            IsIndeterminate="True"
+                            x:Name="loadPR"
+                            Background="Transparent"
+                            VerticalAlignment="Top"
+                            Canvas.ZIndex="1"
+                            ShowPaused="True"
+                            Height="1"/>
             <Button x:Name="folder"
                     Grid.Row="0"
                     Style="{StaticResource TitleButtonStyle}"
