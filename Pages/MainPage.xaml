@@ -11,7 +11,7 @@
     RequestedTheme="Light"
     >
 
-    <!--20210123: 搜索项分组、搜索项导出/导入、选项持久化、浏览器消息、拖动链接、地址栏提示。-->
+    <!--20210123: 入口分组、入口导出/导入、选项持久化、浏览器消息、拖动链接、地址栏提示。-->
 
     <Page.Resources>
         <Style x:Name="TitleButtonStyle" TargetType="Button">
@@ -376,7 +376,7 @@
         <Grid x:Name="SettingGrid"
               Grid.Row="1"
               Grid.Column="2"
-              Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+              Background="{ThemeResource AppBarBackgroundThemeBrush}"
               MaxWidth="360">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -407,15 +407,65 @@
                         HorizontalAlignment="Stretch"
                         Margin="0,0,10,10"
                         Click="TabManage_Click">
-                        管理搜索项
+                        管理入口
                     </Button>
                     <TextBlock Margin="0,20,0,10"
                            FontSize="22">
                     用户账户
                     </TextBlock>
 
-                    <TextBlock Margin="0,20,0,10" x:Uid="UA"
-                           FontSize="22">
+                    <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   VerticalAlignment="Center">
+                    用户名：
+                    </TextBlock>
+
+                    <TextBox Name="UserNameTextBox"
+                 Grid.Row="0"
+                 Grid.Column="1"
+                 Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   VerticalAlignment="Center">
+                密码：
+                    </TextBlock>
+                    <TextBox Name="PasswordTextBox"
+                 Margin="0,0,10,10"
+                 Grid.Row="1"
+                 Grid.Column="1"/>
+                    <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   VerticalAlignment="Center">
+                服务器地址：
+                    </TextBlock>
+                    <TextBox Name="HostTextBox"
+                 Grid.Row="2"
+                 Grid.Column="1"
+                 Margin="0,0,10,10"
+                 Text="ufsets.com"/>
+                    <Button x:Name="SendUserInformationButton"
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,0,10,10"
+                        Click="SendUserInformationButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="LoginTextBlock">login</TextBlock>
+                            <ProgressRing Name="LoginProgressRing"
+                                          IsActive="True"
+                                          Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Name="MessageTextBlock"
+                               Grid.Row="3"
+                               Grid.Column="1"
+                               Margin="3"
+                               Text="您还没有登录。"/>
+
+
+                    <TextBlock Margin="0,20,0,10"
+                               x:Uid="UA"
+                               FontSize="22">
                     浏览器标识（UA）
                     </TextBlock>
                     <TextBlock x:Uid="UAwords1">
@@ -503,7 +553,7 @@
         <Grid Name="HistoryGrid"
               Grid.Row="1"
               Grid.Column="3"
-              Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+              Background="{ThemeResource AppBarBackgroundThemeBrush}"
               HorizontalAlignment="Stretch" Width="360">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -593,7 +643,7 @@
                      Grid.Row="3"
                      SelectionMode="Multiple"
                      HorizontalAlignment="Stretch"
-                     Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                     Background="{ThemeResource AppBarBackgroundThemeBrush}"
                      BorderBrush="{ThemeResource ButtonRevealBorderBrush}"
                      BorderThickness="3,3,3,3"
                      >
@@ -718,7 +768,8 @@
               Grid.Column="0"
               Grid.ColumnSpan="5"
               DragOver="TitleGrid_DragOver"
-              Drop="TitleGrid_Drop" Background="{ThemeResource AppBarBackgroundThemeBrush}">
+              Drop="TitleGrid_Drop"
+              Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <!--AllowDrop="True"-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -911,31 +962,42 @@
 
         </Grid>
         <Grid Grid.Row="1"
-              Grid.Column="0"
-              MaxWidth="480">
+              Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <StackPanel x:Name="EntranceStackPanel"
+                        RightTapped="TabBar_RightTapped"
+                        Orientation="Horizontal">
+                <ListBox x:Name="EntranceSetsBar"
+                         MaxWidth="200"
+                     IsTabStop="True"
+                     SelectionChanged="EntranceSetsBar_SelectionChanged"
+                     Background="{ThemeResource AppBarBackgroundThemeBrush}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
 
-            <ListBox x:Name="TabBar"
-                         IsTabStop="True"
-                         Tapped="TabBar_Tapped"
-                         SelectionChanged="TabBar_SelectionChanged"
-                         MaxWidth="132"
-                         RightTapped="TabBar_RightTapped"
-                         Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel Orientation="Vertical"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
-
+                <ListBox x:Name="EntrancesBar"
+                     IsTabStop="True"
+                     Tapped="TabBar_Tapped"
+                     SelectionChanged="TabBar_SelectionChanged"
+                     Background="{ThemeResource AppBarBackgroundThemeBrush}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </StackPanel>
             <Grid Name="TabManageGrid"
-                  Grid.Column="1"
-                  Background="{ThemeResource SystemControlAcrylicWindowBrush}"
-                  MaxWidth="360"
+                  Grid.Column="2"
+                  Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                  MaxWidth="300"
                   MinWidth="228">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -960,24 +1022,81 @@
                 <ScrollViewer Grid.Row="3">
                     <StackPanel Margin="10,0,0,0">
 
+                        <TextBlock Margin="0,20,0,10"
+                               Grid.Row="1"
+                               FontSize="22">
+                    添加入口或入口集
+                        </TextBlock>
                         <Button Name="TabAdd"
                         x:Uid="AddTab"
-                        Content="添加搜索项"
+                        Content="添加入口"
                         Click="TabAdd_Click"
+                        Margin="10,0,10,10"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"/>
+                        <Button Name="AddEntranceSetButton"
+                        Content="添加入口集"
+                        Click="AddEntranceSetButton_Click"
                         Margin="10,0,10,10"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"/>
 
                         <TextBlock Margin="0,20,0,10"
+                               Grid.Row="1"
+                               FontSize="22">
+                    当前入口集
+                        </TextBlock>
+
+                        <TextBlock>
+                    修改当前入口集的信息。
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center"
+                               Margin="0,0,10,0">
+                        名称
+                        </TextBlock>
+                        <TextBox Name="EntranceSetName"
+                             Margin="0,0,10,10"
+                             HorizontalAlignment="Stretch"/>
+                        <TextBlock VerticalAlignment="Center"
+                               Margin="0,0,10,0">
+                        描述
+                        </TextBlock>
+                        <TextBox Name="EntranceSetDescription"
+                             Margin="0,0,10,10"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+                            <Button Name="EntranceSetSave"
+                                x:Uid="SaveButton"
+                                Margin="0,2,2,2"
+                                Content="保存"
+                                Click="EntranceSetSave_Click"/>
+                            <Button Name="EntranceSetMoveUp"
+                                x:Uid="MoveUpButton"
+                            Margin="2"
+                            Content="上移" Click="EntranceSetMoveUp_Click"/>
+                            <Button Name="EntranceSetMoveDown"
+                                x:Uid="MoveDownButton"
+                            Margin="2"
+                            Content="下移" Click="EntranceSetMoveDown_Click"/>
+                            <Button Name="EntranceSetDelete"
+                                x:Uid="DeleteButton"
+                                Margin="2,2,10,2"
+                                Content="删除"
+                                Click="EntranceSetDelete_Click"/>
+                        </StackPanel>
+
+
+                        <TextBlock Margin="0,20,0,10"
                                x:Uid="CurrentTab"
                                Grid.Row="1"
                                FontSize="22">
-                    当前搜索项
+                    当前入口
                         </TextBlock>
 
                         <TextBlock
                                x:Uid="EditTab">
-                    修改当前搜索项的信息。
+                    修改当前入口的信息。
                         </TextBlock>
                         <TextBlock Margin="0,0,0,10"
                                x:Uid="TabNotice"
@@ -999,22 +1118,17 @@
                         </TextBlock>
                         <TextBox Name="TabHome"
                              Margin="0,0,10,10"/>
-                        <TextBlock VerticalAlignment="Center"
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
                                x:Uid="TabUrl1"
                                Margin="0,0,10,0">
-                        网址（搜索文本之前）
-                        </TextBlock>
+                        网址（有搜索文本时）（%%作为占位符）
+                            </TextBlock>
+                        </StackPanel>
                         <TextBox Name="TabUrl1"
-                             Margin="0,0,10,10"
-                             TextWrapping="Wrap"
-                             MaxHeight="96"/>
-                        <TextBlock VerticalAlignment="Center"
-                               x:Uid="TabUrl2"
-                               Margin="0,0,10,0">
-                        网址（搜索文本之后）
-                        </TextBlock>
-                        <TextBox Name="TabUrl2"
-                             Margin="0,0,10,2"/>
+                                 Margin="0,0,10,10"
+                                 TextWrapping="Wrap"
+                                 MaxHeight="96"/>
 
                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center">
@@ -1056,13 +1170,13 @@
                 FontSize="22"
                 RequestedTheme="Light"
                 Click="ExitFullScreenButton_Click"/>
-        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Height="7" VerticalAlignment="Top" >
-            <Rectangle.Fill>
+        <Rectangle Grid.Row="1" Grid.ColumnSpan="5" Height="1" VerticalAlignment="Top" Fill="#FF777777" >
+            <!--<Rectangle.Fill>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#4C4C4C4C"/>
                     <GradientStop Color="#00000000" Offset="1"/>
                 </LinearGradientBrush>
-            </Rectangle.Fill>
+            </Rectangle.Fill>-->
         </Rectangle>
     </Grid>
 </Page>

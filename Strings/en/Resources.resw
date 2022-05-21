@@ -139,6 +139,9 @@
     <value>Reset application and web page theme colors.
 Some content may not be displayed properly.</value>
   </data>
+  <data name="Default_NewEntrance" xml:space="preserve">
+    <value>New site</value>
+  </data>
   <data name="DeleteButton.Content" xml:space="preserve">
     <value>Delete</value>
   </data>
@@ -252,9 +255,6 @@ Some content may not be displayed properly.</value>
   </data>
   <data name="MoveUpButton.Content" xml:space="preserve">
     <value>Move up</value>
-  </data>
-  <data name="NewItem" xml:space="preserve">
-    <value>New site</value>
   </data>
   <data name="OnlyShowWV1.Text" xml:space="preserve">
     <value>Only show tab 1</value>

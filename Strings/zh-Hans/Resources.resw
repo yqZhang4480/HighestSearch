@@ -121,7 +121,7 @@
     <value>关于应用</value>
   </data>
   <data name="AddTab.Content" xml:space="preserve">
-    <value>添加搜索项</value>
+    <value>添加入口</value>
   </data>
   <data name="AppName" xml:space="preserve">
     <value>并查集</value>
@@ -130,7 +130,7 @@
     <value>后退</value>
   </data>
   <data name="CurrentTab.Text" xml:space="preserve">
-    <value>当前搜索项</value>
+    <value>当前入口</value>
   </data>
   <data name="Dark.Text" xml:space="preserve">
     <value>黑暗模式</value>
@@ -138,6 +138,9 @@
   <data name="DarkToggleSwitchContent.Header" xml:space="preserve">
     <value>重新设定应用与网页主题颜色。
 部分内容可能无法正常显示。</value>
+  </data>
+  <data name="Default_NewEntrance" xml:space="preserve">
+    <value>新建入口</value>
   </data>
   <data name="DeleteButton.Content" xml:space="preserve">
     <value>删除</value>
@@ -167,7 +170,7 @@
     <value>未在该列表中显示的记录也会被删除。</value>
   </data>
   <data name="EditTab.Text" xml:space="preserve">
-    <value>在左边选择一个搜索项，然后修改其信息。</value>
+    <value>在左边选择一个入口，然后修改其信息。</value>
   </data>
   <data name="FlyoutBack.Text" xml:space="preserve">
     <value>后退</value>
@@ -224,7 +227,7 @@
     <value>访问时出现错误。信息：</value>
   </data>
   <data name="Message_CannotResolve_Item" xml:space="preserve">
-    <value>无法解析网址，请修正搜索项。</value>
+    <value>无法解析网址，请修正入口。</value>
   </data>
   <data name="Message_CannotResolve_LinkBar" xml:space="preserve">
     <value>无法解析网址，请修正地址栏。</value>
@@ -252,9 +255,6 @@
   </data>
   <data name="MoveUpButton.Content" xml:space="preserve">
     <value>上移</value>
-  </data>
-  <data name="NewItem" xml:space="preserve">
-    <value>新建搜索项</value>
   </data>
   <data name="OnlyShowWV1.Text" xml:space="preserve">
     <value>仅 标签页 1</value>
@@ -308,7 +308,7 @@
     <value>网址（无搜索文本时）</value>
   </data>
   <data name="TabManageTitle.Text" xml:space="preserve">
-    <value>搜索项</value>
+    <value>入口</value>
   </data>
   <data name="TabName.Text" xml:space="preserve">
     <value>名称</value>
@@ -317,10 +317,7 @@
     <value>网址应以https:或http:开头。</value>
   </data>
   <data name="TabUrl1.Text" xml:space="preserve">
-    <value>网址（搜索文本之前）</value>
-  </data>
-  <data name="TabUrl2.Text" xml:space="preserve">
-    <value>网址（搜索文本之后）</value>
+    <value>网址（有搜索文本时）（%%作为占位符）</value>
   </data>
   <data name="UA.Text" xml:space="preserve">
     <value>浏览器标识（UA）</value>

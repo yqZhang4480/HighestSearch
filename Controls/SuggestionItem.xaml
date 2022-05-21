@@ -1,0 +1,47 @@
+﻿<UserControl
+    x:Class="聚合搜索.SuggestionItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:聚合搜索"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="30"
+    d:DesignWidth="100">
+
+    <Grid CornerRadius="3"
+          Loaded="Grid_Loaded">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+                   <!--Width="{Binding ActualHeight, ElementName=IconTextBlock}"-->
+        <TextBlock Name="IconTextBlock"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Stretch"
+                   FontSize="24"
+                   Margin="10"
+                   FontFamily="Segoe MDL2 Assets"
+                   Grid.Column="0"/>
+        <Grid Grid.Column="1"
+              Margin="5,3,10,3"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Name="TitleTextBlock"
+                       HorizontalAlignment="Stretch"
+                       Grid.Row="0"
+                       Margin="0,0,0,2"/>
+            <TextBlock Name="NoteTextBlock"
+                       HorizontalAlignment="Stretch"
+                       FontFamily="Segoe UI"
+                       Grid.Row="1"
+                       FontSize="12"/>
+        </Grid>
+    </Grid>
+</UserControl>
